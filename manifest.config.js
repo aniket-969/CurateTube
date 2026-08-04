@@ -21,9 +21,5 @@ export default defineManifest({
 
   host_permissions: ["https://www.googleapis.com/*"],
 
-  oauth2: {
-    client_id:
-      "122698212064-erds8d2qht5snctlfhsdd0hs8njjgnt6.apps.googleusercontent.com",
-    scopes: ["https://www.googleapis.com/auth/youtube"],
-  },
+  
 });

@@ -1,5 +1,5 @@
 const CLIENT_ID =
-  "122698212064-erds8d2qht5snctlfhsdd0hs8njjgnt6.apps.googleusercontent.com";
+  "122698212064-417ro6727cp119ai69qalc276rkovb20.apps.googleusercontent.com";
 
 const SCOPES = [
   "https://www.googleapis.com/auth/youtube",
