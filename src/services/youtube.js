@@ -33,19 +33,23 @@ export async function getPlaylists(accessToken, pageToken = "") {
   };
 }
 
-export async function getPlaylistItems(accessToken, playlistId) {
-  let videos = [];
-  let pageToken = "";
-    console.log(playlistId,"Playlistid")
-  do {
+export async function getPlaylistItems(
+  accessToken,
+  playlistId,
+  pageToken = ""
+) {
+  const videos = [];
+  let nextPageToken = pageToken;
+
+  while (videos.length < 300) {
     const params = new URLSearchParams({
       part: "snippet,contentDetails",
       playlistId,
       maxResults: "50",
     });
 
-    if (pageToken) {
-      params.set("pageToken", pageToken);
+    if (nextPageToken) {
+      params.set("pageToken", nextPageToken);
     }
 
     const response = await fetch(`${API}/playlistItems?${params}`, {
@@ -66,13 +70,22 @@ export async function getPlaylistItems(accessToken, playlistId) {
         .map((item) => ({
           videoId: item.contentDetails.videoId,
           title: item.snippet.title,
-          channelTitle: item.snippet.videoOwnerChannelTitle || item.snippet.channelTitle,
-         
+          channelTitle:
+            item.snippet.videoOwnerChannelTitle ??
+            item.snippet.channelTitle,
         }))
     );
 
-    pageToken = data.nextPageToken;
-  } while (pageToken);
-console.log(videos,"returning videos")
-  return videos;
+    if (!data.nextPageToken) {
+      nextPageToken = null;
+      break;
+    }
+
+    nextPageToken = data.nextPageToken;
+  }
+
+  return {
+    items: videos,
+    nextPageToken,
+  };
 }

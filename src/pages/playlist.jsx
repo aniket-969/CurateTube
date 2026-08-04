@@ -21,11 +21,7 @@ function PlaylistScreen({ user, setUser }) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (
-          entry.isIntersecting &&
-          nextPageToken &&
-          !loadingMore
-        ) {
+        if (entry.isIntersecting && nextPageToken && !loadingMore) {
           loadMorePlaylists();
         }
       },
@@ -59,10 +55,7 @@ function PlaylistScreen({ user, setUser }) {
     setLoadingMore(true);
 
     try {
-      const data = await getPlaylists(
-        user.accessToken,
-        nextPageToken
-      );
+      const data = await getPlaylists(user.accessToken, nextPageToken);
 
       setPlaylists((prev) => [...prev, ...data.playlists]);
       setNextPageToken(data.nextPageToken);
@@ -75,13 +68,29 @@ function PlaylistScreen({ user, setUser }) {
 
   async function handlePlaylistClick(playlist) {
     try {
-      const items = await getPlaylistItems(
-        user.accessToken,
-        playlist.id
-      );
+      let pageToken = "";
 
-      console.log(playlist.title);
-      console.log(items);
+      while (true) {
+        const { items, nextPageToken } = await getPlaylistItems(
+          user.accessToken,
+          playlist.id,
+          pageToken
+        );
+
+        console.log(`Fetched ${items.length} videos`);
+        console.log(items);
+
+        if (!nextPageToken) {
+          break;
+        }
+
+        pageToken = nextPageToken;
+
+        // Later:
+        // await analyzeBatch(items);
+      }
+
+      console.log("Finished fetching playlist.");
     } catch (error) {
       console.error(error);
     }
@@ -104,9 +113,7 @@ function PlaylistScreen({ user, setUser }) {
 
           <div>
             <p className="font-semibold">{user.profile.name}</p>
-            <p className="text-sm text-gray-500">
-              {user.profile.email}
-            </p>
+            <p className="text-sm text-gray-500">{user.profile.email}</p>
           </div>
         </div>
 
