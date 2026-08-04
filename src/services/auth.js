@@ -2,8 +2,13 @@ const CLIENT_ID =
   "122698212064-417ro6727cp119ai69qalc276rkovb20.apps.googleusercontent.com";
 
 const SCOPES = [
+  "openid",
+  "email",
+  "profile",
   "https://www.googleapis.com/auth/youtube",
 ].join(" ");
+
+const STORAGE_KEY = "user";
 
 export async function login() {
   const redirectUri = chrome.identity.getRedirectURL();
@@ -36,26 +41,87 @@ export async function login() {
     throw new Error("Access token not found.");
   }
 
-  return {
+  const profileResponse = await fetch(
+    "https://www.googleapis.com/oauth2/v3/userinfo",
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!profileResponse.ok) {
+    throw new Error("Failed to fetch user profile.");
+  }
+
+  const profile = await profileResponse.json();
+
+  const user = {
     accessToken,
+    profile: {
+      name: profile.name,
+      email: profile.email,
+      picture: profile.picture,
+    },
   };
+
+  await chrome.storage.local.set({
+    [STORAGE_KEY]: user,
+  });
+
+  return user;
+}
+
+async function getStoredUser() {
+  const result = await chrome.storage.local.get(STORAGE_KEY);
+  return result[STORAGE_KEY] ?? null;
 }
 
 export async function logout() {
+  const user = await getStoredUser();
+
+  if (user?.accessToken) {
+    try {
+      await fetch(
+        `https://oauth2.googleapis.com/revoke?token=${user.accessToken}`,
+        {
+          method: "POST",
+        }
+      );
+    } catch (error) {
+      console.error("Failed to revoke token:", error);
+    }
+  }
+
+  await chrome.storage.local.remove(STORAGE_KEY);
+}
+
+export async function validateStoredUser() {
+  const user = await getStoredUser();
+
+  if (!user) {
+    return null;
+  }
+
   try {
-    const { token } = await chrome.identity.getAuthToken({
-      interactive: false,
-    });
+    const response = await fetch(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      }
+    );
 
-    if (!token) return;
+    if (!response.ok) {
+      await chrome.storage.local.remove(STORAGE_KEY);
+      return null;
+    }
 
-    await fetch(`https://oauth2.googleapis.com/revoke?token=${token}`, {
-      method: "POST",
-    });
-
-    await chrome.identity.removeCachedAuthToken({ token });
+    return user;
   } catch (error) {
-    console.error("Logout failed:", error);
-    throw error;
+    console.error("Failed to validate user:", error);
+    await chrome.storage.local.remove(STORAGE_KEY);
+    return null;
   }
 }

@@ -21,7 +21,7 @@ function LoginScreen({ setUser }) {
 
       <button
         onClick={handleLogin}
-        className="rounded-lg bg-red-600 px-5 py-3 text-white hover:bg-red-700 cursor-pointer"
+        className="rounded-lg bg-red-600 px-5 py-3 text-white hover:bg-red-700"
       >
         Sign in with Google
       </button>
