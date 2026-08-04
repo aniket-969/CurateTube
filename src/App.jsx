@@ -1,16 +1,16 @@
 import { useState } from "react";
-import LoginScreen from "./pages/login";
-import PlaylistScreen from "./pages/playlist";
+import LoginScreen from "./pages/Login";
+import PlaylistScreen from "./pages/Playlist";
 
 function App() {
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
 
   return (
     <>
-      {!token ? (
-        <LoginScreen setToken={setToken} />
+      {!user ? (
+        <LoginScreen setUser={setUser} />
       ) : (
-        <PlaylistScreen token={token} />
+        <PlaylistScreen user={user} />
       )}
     </>
   );

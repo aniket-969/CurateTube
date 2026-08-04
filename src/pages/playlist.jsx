@@ -1,17 +1,9 @@
-function PlaylistScreen({ token }) {
+function PlaylistScreen({ user }) {
   return (
-    <div className="w-[380px] h-[500px] p-5">
-      <h2 className="text-2xl font-bold mb-4">
-        Logged In ✅
+    <div className="w-[380px] h-[500px] flex items-center justify-center">
+      <h2 className="text-xl font-semibold">
+        Logged in successfully 🎉
       </h2>
-
-      <p className="break-all text-sm">
-        Token:
-      </p>
-
-      <p className="text-xs mt-2 break-all">
-        {token}
-      </p>
     </div>
   );
 }

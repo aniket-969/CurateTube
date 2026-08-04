@@ -1,10 +1,10 @@
 import { login } from "../services/auth";
 
-function LoginScreen({ setToken }) {
+function LoginScreen({ setUser }) {
   const handleLogin = async () => {
     try {
-      const token = await login();
-      setToken(token);
+      const user = await login();
+      setUser(user);
     } catch (error) {
       console.error(error);
       alert("Login failed");
