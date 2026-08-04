@@ -45,7 +45,7 @@ export async function getPlaylists(accessToken) {
 export async function getPlaylistItems(accessToken, playlistId) {
   let videos = [];
   let pageToken = "";
-
+    console.log(playlistId,"Playlistid")
   do {
     const params = new URLSearchParams({
       part: "snippet,contentDetails",
@@ -82,6 +82,6 @@ export async function getPlaylistItems(accessToken, playlistId) {
 
     pageToken = data.nextPageToken;
   } while (pageToken);
-
+console.log(videos,"returning videos")
   return videos;
 }
