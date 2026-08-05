@@ -40,8 +40,8 @@ ARTIST RULES
 - Return the credited performing artist(s).
 - If the performer is a band, duo or music group, return ONLY the band's/group's name.
 - Never return individual band members.
-- Return at most 3 artists in case of collboration.
-- Return an empty array if the artist or band name both cannot be confidently identified.
+- For collaborations between individual artists, return all credited performing artists, up to a maximum of 3.
+- Return an empty array if the performing artist or group cannot be confidently identified.
 
 GENRE RULES
 
@@ -193,7 +193,7 @@ Ghazal:
 
 MOOD RULES
 
-Return one or more moods from the following list.
+Return up to 2 moods from the following list.
 
 Allowed Moods:
 - Feel Good
@@ -217,6 +217,7 @@ Allowed Moods:
 LANGUAGE RULES
 
 - Return the dominant language of the song.
+- Return the language name in English.
 - If multiple languages are present, return the language used in the majority of the lyrics.
 - Return null if unknown.
 
@@ -272,8 +273,8 @@ Input:
 
 {
   "videoId": "2",
-  "title": "Best Song Ever ❤️",
-  "channel": "Music Forever"
+  "title": "React Tutorial ",
+  "channel": "Chai aur Code"
 }
 
 Output:
