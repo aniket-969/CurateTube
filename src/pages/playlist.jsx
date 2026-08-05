@@ -131,7 +131,7 @@ function PlaylistScreen({ user, setUser }) {
             disabled={loadingMore}
             className="rounded-lg border px-3 py-2 text-sm whitespace-nowrap disabled:opacity-50"
           >
-            {loadingMore ? "Loading..." : "Load 50"}
+            {loadingMore ? "Loading..." : "Load more"}
           </button>
         ) : (
           <div className="flex items-center px-2 text-xs text-gray-500 whitespace-nowrap">
