@@ -3,18 +3,16 @@ import { SYSTEM_PROMPT } from "../prompt.js";
 import { parseLLMResponse } from "../utils.js";
 
 export async function classifySongs(apiKey, songs) {
- try {
-  console.log("Inside classify", songs, apiKey);
+  try {
+    const client = new OpenAI({
+      apiKey,
+      baseURL: "https://api.deepseek.com",
+      dangerouslyAllowBrowser: true,
+    });
 
-  console.time("API");
+    console.time("API");
 
-  const res = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
+    const response = await client.chat.completions.create({
       model: "deepseek-v4-flash",
       temperature: 0,
       thinking: {
@@ -30,28 +28,20 @@ export async function classifySongs(apiKey, songs) {
           content: JSON.stringify(songs.slice(0, 10)),
         },
       ],
-    }),
-  });
+    });
 
-  console.timeEnd("API");
+    console.timeEnd("API");
 
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`DeepSeek ${res.status}: ${errorText}`);
-  }
+    console.log(response.usage);
 
-  const response = await res.json();
+    const text = response.choices?.[0]?.message?.content;
 
-  console.log(response.usage, "response usage");
+    if (!text) {
+      throw new Error("No response content received from DeepSeek.");
+    }
 
-  const text = response.choices?.[0]?.message?.content;
-
-  if (!text) {
-    throw new Error("No response content received from DeepSeek.");
-  }
-
-  return parseLLMResponse(text);
-} catch (err) {
+    return parseLLMResponse(text);
+  } catch (err) {
     console.error("DeepSeek Error:", err);
     throw err;
   }
