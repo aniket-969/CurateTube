@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { SYSTEM_PROMPT } from "../prompt";
-import { parseLLMResponse } from "../utils";
+import { SYSTEM_PROMPT } from "../prompt.js";
+import { parseLLMResponse } from "../utils.js";
 
 export async function classifySongs(apiKey, songs) {
     const client = new OpenAI({

@@ -1,6 +1,6 @@
-import * as deepseek from "./providers/deepseek";
-import * as gemini from "./providers/gemini";
-import * as openai from "./providers/openai";
+import * as deepseek from "./providers/deepseek.js";
+import * as gemini from "./providers/gemini.js";
+import * as openai from "./providers/openai.js";
 
 export async function classifySongs(provider, apiKey, songs) {
     switch (provider) {

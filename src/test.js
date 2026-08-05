@@ -1,10 +1,10 @@
-import { classifySongs } from "./services/llm";
-import { data} from "../src/services/llm/utils"
+import { classifySongs } from "./services/llm/index.js"
+import { data} from "../src/services/llm/utils.js"
 
-async function test() {
+export async function test() {
     console.log(import.meta.env.VITE_DEEPSEEK_API_KEY,
             data)
-            return
+            
     try {
         const result = await classifySongs(
             "deepseek",
@@ -12,7 +12,7 @@ async function test() {
             data
         );
 
-        console.log(result);
+        console.log("Got result",result);
     } catch (err) {
         console.error(err);
     }
