@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import LoginScreen from "./pages/Login";
 import PlaylistScreen from "./pages/Playlist";
 import { validateStoredUser } from "./services/auth";
-import { test } from "./test";
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -16,10 +15,6 @@ function App() {
     init();
   }, []);
 
-  useEffect(()=>{
-    console.log("calling this")
-    test()
-  },[])
 
   if (user === undefined) {
     return (

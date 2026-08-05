@@ -1,4 +1,5 @@
 import { login } from "../services/auth";
+import { test } from "../test";
 
 function LoginScreen({ setUser }) {
   const handleLogin = async () => {
@@ -24,6 +25,12 @@ function LoginScreen({ setUser }) {
         className="rounded-lg bg-red-600 px-5 py-3 text-white hover:bg-red-700"
       >
         Sign in with Google
+      </button>
+      <button
+        onClick={test}
+        className="rounded-lg bg-green-600 px-5 py-3 text-white hover:bg-green-700"
+      >
+        Test
       </button>
     </div>
   );

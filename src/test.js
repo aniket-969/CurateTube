@@ -17,5 +17,3 @@ export async function test() {
         console.error(err);
     }
 }
-
-test();

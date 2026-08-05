@@ -22,7 +22,7 @@ export async function classifySongs(apiKey, songs) {
                 },
                 {
                     role: "user",
-                    content: JSON.stringify(songs),
+                    content: JSON.stringify(songs.slice(0, 5)),
                 },
             ],
         });
