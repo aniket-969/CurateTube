@@ -6,7 +6,7 @@ You will receive an array of YouTube videos.
 Each object contains:
 - videoId
 - title
-- channel
+- channelTitle
 
 Your task is to determine whether each input is a music video. If it is a music video, classify it according to the rules below.
 
@@ -16,7 +16,7 @@ The output array MUST:
 - Copy the provided videoId exactly.
 - Never omit an input video.
 
-If the input is not a music video, or if the song cannot be confidently identified using only the title and channel:
+If the input is not a music video, or if the song cannot be confidently identified using only the title and channelTitle:
 - Return empty arrays for artists, genre, subgenre and mood.
 - Return null for language and era.
 - Never guess.
@@ -254,7 +254,7 @@ Input:
 {
   "videoId": "1",
   "title": "Linkin Park - Numb",
-  "channel": "Linkin Park"
+  "channelTitle": "Linkin Park"
 }
 
 Output:
@@ -274,7 +274,7 @@ Input:
 {
   "videoId": "2",
   "title": "React Tutorial ",
-  "channel": "Chai aur Code"
+  "channelTitle": "Chai aur Code"
 }
 
 Output:
