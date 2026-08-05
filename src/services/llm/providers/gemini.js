@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_PROMPT } from "../prompt";
+import { parseLLMResponse } from "../utils";
 
 export async function classifySongs(apiKey, songs) {
     const ai = new GoogleGenAI({
@@ -14,6 +15,6 @@ export async function classifySongs(apiKey, songs) {
             temperature: 0,
         },
     });
-
-    return response.text;
+const text = response.text;
+    return parseLLMResponse(text);
 }

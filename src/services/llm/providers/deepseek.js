@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { SYSTEM_PROMPT } from "../prompt";
+import { parseLLMResponse } from "../utils";
 
 export async function classifySongs(apiKey, songs) {
     const client = new OpenAI({
@@ -22,6 +23,7 @@ export async function classifySongs(apiKey, songs) {
             },
         ],
     });
-
-    return response.choices[0].message.content;
+    const text = response.choices[0].message.content;
+    return parseLLMResponse(text);
+    
 }
