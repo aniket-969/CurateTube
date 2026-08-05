@@ -71,8 +71,7 @@ export async function getPlaylistItems(
           videoId: item.contentDetails.videoId,
           title: item.snippet.title,
           channelTitle:
-            item.snippet.videoOwnerChannelTitle ??
-            item.snippet.channelTitle,
+            item.snippet.videoOwnerChannelTitle ?? item.snippet.channelTitle,
         }))
     );
 
