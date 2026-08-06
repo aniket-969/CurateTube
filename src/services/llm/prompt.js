@@ -177,12 +177,6 @@ J-Pop:
 - J-Rock
 - City Pop
 
-Bollywood:
-- Romantic
-- Dance
-- Ballad
-- Item Song
-
 Qawwali:
 - Sufi Qawwali
 - Traditional Qawwali
@@ -208,6 +202,7 @@ Allowed Moods:
 - Playful
 - Dark
 - Sensual
+- Patriotic
 
 - Return only moods that genuinely describe the song.
 - Do not add moods simply to increase the count.
