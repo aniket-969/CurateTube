@@ -25,7 +25,7 @@ export async function classifySongs(apiKey, songs) {
         },
         {
           role: "user",
-          content: JSON.stringify(songs.slice(0, 10)),
+          content: JSON.stringify(songs),
         },
       ],
     });
