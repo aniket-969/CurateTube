@@ -147,10 +147,6 @@ Country:
 - Country Pop
 - Bluegrass
 
-Folk:
-- Indie Folk
-- Contemporary Folk
-
 Latin:
 - Reggaeton
 - Latin Pop
