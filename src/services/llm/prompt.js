@@ -143,10 +143,6 @@ Classical:
 - Opera
 - Chamber Music
 
-Indian Classical:
-- Hindustani Classical
-- Carnatic Classical
-
 Country:
 - Country Pop
 - Bluegrass
@@ -168,22 +164,6 @@ Reggae:
 Afrobeats:
 - Afro-Fusion
 - Afro-Pop
-
-K-Pop:
-- K-Pop Ballad
-- K-Rap
-
-J-Pop:
-- J-Rock
-- City Pop
-
-Qawwali:
-- Sufi Qawwali
-- Traditional Qawwali
-
-Ghazal:
-- Contemporary Ghazal
-- Classical Ghazal
 
 MOOD RULES
 
