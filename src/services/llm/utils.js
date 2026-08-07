@@ -8,7 +8,7 @@ export function parseLLMResponse(text) {
     return JSON.parse(cleaned);
 }
 
-const data1 = [
+export const data = [
     {
         "videoId": "GmCn31pq8i0",
         "title": "A.R. Rahman - Ghanan Ghanan Best Video|Lagaan|Aamir Khan|Alka Yagnik|Udit Narayan",
@@ -266,7 +266,7 @@ const data1 = [
     }
 ]
 
-export const data = [
+const data1 = [
     {
         "videoId": "-LWbeZUyQe8",
         "title": "Kachha Ghada ( Ye jo hans rahi hai duniya) Song by Rahgir | Music Shubhodeep Roy",
@@ -361,5 +361,871 @@ export const data = [
         "videoId": "lI5w2QwdYik",
         "title": "Bo Burnham: Inside  - Jeff Bezos",
         "channelTitle": "SaintNSinner"
+    }
+]
+
+export const response = [
+    {
+        "videoId": "GmCn31pq8i0",
+        "artists": [
+            "A.R. Rahman",
+            "Alka Yagnik",
+            "Udit Narayan"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Feel Good",
+            "Party"
+        ],
+        "language": "Hindi",
+        "era": "2000s"
+    },
+    {
+        "videoId": "9JDSGhhiOwI",
+        "artists": [
+            "A.R. Rahman"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Sad"
+        ],
+        "language": "Hindi",
+        "era": "2000s"
+    },
+    {
+        "videoId": "r7qovpFAGrQ",
+        "artists": [
+            "Lil Nas X",
+            "Billy Ray Cyrus"
+        ],
+        "genre": [
+            "Country",
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Country Pop",
+            "Trap"
+        ],
+        "mood": [
+            "Hype",
+            "Playful"
+        ],
+        "language": "English",
+        "era": "2010s"
+    },
+    {
+        "videoId": "A8Yr1OOeOT8",
+        "artists": [
+            "Jagjit Kaur"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "1960s"
+    },
+    {
+        "videoId": "63AdNP-Wu0k",
+        "artists": [
+            "Mukesh"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "1970s"
+    },
+    {
+        "videoId": "L3wKzyIN1yk",
+        "artists": [
+            "Rag'n'Bone Man"
+        ],
+        "genre": [
+            "R&B / Soul"
+        ],
+        "subgenre": [
+            "Contemporary R&B"
+        ],
+        "mood": [
+            "Dark",
+            "Sad"
+        ],
+        "language": "English",
+        "era": "2010s"
+    },
+    {
+        "videoId": "u6bk53x2Kno",
+        "artists": [
+            "Lata Mangeshkar",
+            "Udit Narayan"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "1990s"
+    },
+    {
+        "videoId": "CTGLJbhPRNs",
+        "artists": [
+            "Shankar Mahadevan",
+            "Shalmali Kholgade"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Playful",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "2010s"
+    },
+    {
+        "videoId": "FCWKGavielw",
+        "artists": [
+            "Jubin Nautiyal",
+            "Mame Khan",
+            "Yohani"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "WGdoaRVOm8o",
+        "artists": [
+            "Yo Yo Honey Singh",
+            "Alfaaz",
+            "Hommie Dilliwala"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Desi Hip-Hop"
+        ],
+        "mood": [
+            "Party",
+            "Hype"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "u0Y3EHuMktE",
+        "artists": [
+            "Raftaar",
+            "Rashmeet Kaur"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Desi Hip-Hop"
+        ],
+        "mood": [
+            "Party",
+            "Hype"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "ANBRPZ8GGSk",
+        "artists": [
+            "Shubh"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Desi Hip-Hop"
+        ],
+        "mood": [
+            "Hype",
+            "Dark"
+        ],
+        "language": "Punjabi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "nWazIXT3Xno",
+        "artists": [
+            "Jasleen Royal"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Comforting"
+        ],
+        "language": "Hindi",
+        "era": "2010s"
+    },
+    {
+        "videoId": "kd-6aw99DpA",
+        "artists": [
+            "Kailash Kher"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Hype",
+            "Party"
+        ],
+        "language": "Hindi",
+        "era": "2000s"
+    },
+    {
+        "videoId": "cKsWaDS3Rzs",
+        "artists": [
+            "Tech N9ne"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Trap"
+        ],
+        "mood": [
+            "Hype",
+            "Dark"
+        ],
+        "language": "English",
+        "era": "2010s"
+    },
+    {
+        "videoId": "MEg-oqI9qmw",
+        "artists": [
+            "Masked Wolf"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Trap"
+        ],
+        "mood": [
+            "Hype",
+            "Dark"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "3KFvoDDs0XM",
+        "artists": [
+            "Roy Orbison"
+        ],
+        "genre": [
+            "Rock"
+        ],
+        "subgenre": [
+            "Classic Rock"
+        ],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "English",
+        "era": "1960s"
+    },
+    {
+        "videoId": "XgdY_s1LsZc",
+        "artists": [
+            "Sukhwinder Singh"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "2000s"
+    },
+    {
+        "videoId": "ltYjI3oN6zc",
+        "artists": [
+            "Rahgir"
+        ],
+        "genre": [
+            "Folk"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Playful",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "eFO3y_Q7i_Q",
+        "artists": [
+            "A.R. Rahman",
+            "Udit Narayan"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "1990s"
+    },
+    {
+        "videoId": "W0DM5lcj6mw",
+        "artists": [
+            "Imagine Dragons"
+        ],
+        "genre": [
+            "Rock"
+        ],
+        "subgenre": [
+            "Alternative Rock"
+        ],
+        "mood": [
+            "Hype",
+            "Dark"
+        ],
+        "language": "English",
+        "era": "2010s"
+    },
+    {
+        "videoId": "mr_n9R3E_w4",
+        "artists": [
+            "Lata Mangeshkar"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "1950s"
+    },
+    {
+        "videoId": "9Za8ZtfHXXY",
+        "artists": [],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "1960s"
+    },
+    {
+        "videoId": "ptqkTdtt7nI",
+        "artists": [
+            "Kishore Kumar"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "1970s"
+    },
+    {
+        "videoId": "F4vnfZ2Did4",
+        "artists": [
+            "Kishore Kumar"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "1970s"
+    },
+    {
+        "videoId": "kR8rsh1AqRs",
+        "artists": [
+            "Kishore Kumar"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "1970s"
+    },
+    {
+        "videoId": "1YDULSDalig",
+        "artists": [
+            "Mohit Chauhan"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Dreamy"
+        ],
+        "language": "Hindi",
+        "era": "2010s"
+    },
+    {
+        "videoId": "YfPSnN4pqpw",
+        "artists": [
+            "Mohammed Rafi"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "1960s"
+    },
+    {
+        "videoId": "TY2qO3lt-dE",
+        "artists": [
+            "Mohammed Rafi"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "1960s"
+    },
+    {
+        "videoId": "0U3QlZP5_No",
+        "artists": [
+            "Rahgir"
+        ],
+        "genre": [
+            "Folk"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Dreamy",
+            "Comforting"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "bDgsMwXcTkk",
+        "artists": [
+            "Bali",
+            "Badshah"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Desi Hip-Hop"
+        ],
+        "mood": [
+            "Hype",
+            "Party"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "Cc_cNEjAh_Y",
+        "artists": [
+            "Shreya Ghoshal"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "2010s"
+    },
+    {
+        "videoId": "C02IJE_80Ok",
+        "artists": [],
+        "genre": [
+            "Folk"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Spiritual"
+        ],
+        "language": "Hindi",
+        "era": null
+    },
+    {
+        "videoId": "tLImVUXMVt4",
+        "artists": [
+            "YNG Martyr"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Trap"
+        ],
+        "mood": [
+            "Hype",
+            "Playful"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "Q1QcLbkYFaM",
+        "artists": [
+            "BoyWithUke",
+            "blackbear"
+        ],
+        "genre": [
+            "Pop"
+        ],
+        "subgenre": [
+            "Indie Pop"
+        ],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "T2fjQrsKbAM",
+        "artists": [
+            "BoyWithUke"
+        ],
+        "genre": [
+            "Pop"
+        ],
+        "subgenre": [
+            "Indie Pop"
+        ],
+        "mood": [
+            "Sad",
+            "Dreamy"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "C805Nt0JPIY",
+        "artists": [],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "2010s"
+    },
+    {
+        "videoId": "6AwXKJoKJz4",
+        "artists": [
+            "Kelis"
+        ],
+        "genre": [
+            "R&B / Soul"
+        ],
+        "subgenre": [
+            "Contemporary R&B"
+        ],
+        "mood": [
+            "Sensual",
+            "Playful"
+        ],
+        "language": "English",
+        "era": "2000s"
+    },
+    {
+        "videoId": "UN6oMdALC_8",
+        "artists": [],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Trap"
+        ],
+        "mood": [
+            "Hype",
+            "Playful"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "pjolhlLBb6g",
+        "artists": [
+            "Will Joseph Cook"
+        ],
+        "genre": [
+            "Pop"
+        ],
+        "subgenre": [
+            "Indie Pop"
+        ],
+        "mood": [
+            "Feel Good",
+            "Playful"
+        ],
+        "language": "English",
+        "era": "2010s"
+    },
+    {
+        "videoId": "QEbBuW8u1bA",
+        "artists": [
+            "CKay"
+        ],
+        "genre": [
+            "Afrobeats"
+        ],
+        "subgenre": [
+            "Afro-Fusion"
+        ],
+        "mood": [
+            "Romantic",
+            "Dreamy"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "UUCMtZCIYz4",
+        "artists": [
+            "BoyWithUke"
+        ],
+        "genre": [
+            "Pop"
+        ],
+        "subgenre": [
+            "Indie Pop"
+        ],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "WY8W6NqtTlM",
+        "artists": [
+            "Earl"
+        ],
+        "genre": [
+            "R&B / Soul"
+        ],
+        "subgenre": [
+            "Contemporary R&B"
+        ],
+        "mood": [
+            "Romantic",
+            "Sensual"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "tAPVdPLCvYU",
+        "artists": [
+            "Suzonn"
+        ],
+        "genre": [
+            "Pop"
+        ],
+        "subgenre": [
+            "Indie Pop"
+        ],
+        "mood": [
+            "Sad",
+            "Heartbreak"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "XJZiRY9Qe-I",
+        "artists": [
+            "Ankit Tiwari",
+            "Nikhita Gandhi"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Party",
+            "Hype"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "H92bD3wqjoQ",
+        "artists": [
+            "Maalavika Manoj"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Feel Good"
+        ],
+        "language": "Hindi",
+        "era": "2020s"
+    },
+    {
+        "videoId": "Z-ap5Fp2T6c",
+        "artists": [
+            "Bo Burnham"
+        ],
+        "genre": [
+            "Pop"
+        ],
+        "subgenre": [
+            "Indie Pop"
+        ],
+        "mood": [
+            "Playful",
+            "Dark"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "R8iaViNIy3U",
+        "artists": [
+            "Bo Burnham"
+        ],
+        "genre": [
+            "Pop"
+        ],
+        "subgenre": [
+            "Electropop"
+        ],
+        "mood": [
+            "Playful",
+            "Dark"
+        ],
+        "language": "English",
+        "era": "2020s"
+    },
+    {
+        "videoId": "Iw5xbunjgSg",
+        "artists": [
+            "Hariharan",
+            "S.P. Balasubrahmanyam"
+        ],
+        "genre": [
+            "Bollywood"
+        ],
+        "subgenre": [],
+        "mood": [
+            "Romantic",
+            "Spiritual"
+        ],
+        "language": "Tamil",
+        "era": "1990s"
+    },
+    {
+        "videoId": "RJMgaEpnmuM",
+        "artists": [],
+        "genre": [],
+        "subgenre": [],
+        "mood": [],
+        "language": null,
+        "era": null
+    },
+    {
+        "videoId": "V5En3Ks3OjE",
+        "artists": [
+            "Kaka"
+        ],
+        "genre": [
+            "Hip-Hop / Rap"
+        ],
+        "subgenre": [
+            "Desi Hip-Hop"
+        ],
+        "mood": [
+            "Hype",
+            "Party"
+        ],
+        "language": "Punjabi",
+        "era": "2020s"
     }
 ]
