@@ -1,4 +1,4 @@
-export default function createPlaylistCandidate(name, type, videos) {
+export function createPlaylistCandidate(name, type, videos) {
   return {
     name,
     type,
@@ -23,7 +23,7 @@ export default function createPlaylistCandidate(name, type, videos) {
  * => "Hindi Indie Pop"
  */
 
-export default function buildPlaylistName(nameOrder, genre, values = {}) {
+export function buildPlaylistName(nameOrder, genre, values = {}) {
   const parts = [];
 
   for (const key of nameOrder) {

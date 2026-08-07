@@ -1,55 +1,55 @@
-import groupBy from "./utils/groupBy";
-import filterThreshold from "./utils/filterThreshold";
-import buildPlaylistName from "./utils/buildPlaylistName";
-import createPlaylistCandidate from "./utils/createPlaylistCandidate";
+import groupBy from "../utils/groupBy";
+import filterThreshold from "../utils/filterThreshold";
+import {
+  buildPlaylistName,
+  createPlaylistCandidate,
+} from "../utils/createPlaylistCandidate";
 
 function processLevels({
   playlists,
   videos,
   dominantValue,
   strategy,
+  dominant,
   levelIndex,
   values,
 }) {
-  // No more levels to process
+  // Finished traversing all levels
   if (levelIndex >= strategy.levels.length) {
     return;
   }
 
   const currentLevel = strategy.levels[levelIndex];
 
-  // Group by current level
+  // Group by current level and apply its threshold
   const groups = filterThreshold(
-    groupBy(videos, currentLevel),
-    THRESHOLDS[currentLevel.toUpperCase()]
+    groupBy(videos, currentLevel.key),
+    currentLevel.threshold
   );
 
   for (const [value, bucket] of Object.entries(groups)) {
-    // Keep track of all values discovered so far
+    // Accumulate values discovered so far
     const nextValues = {
       ...values,
-      [currentLevel]: value,
+      [currentLevel.key]: value,
     };
 
-    // Create playlist immediately
+    // Generate playlist for this bucket
     playlists.push(
       createPlaylistCandidate(
-        buildPlaylistName(
-          strategy.nameOrder,
-          dominantValue,
-          nextValues
-        ),
-        "genre",
+        buildPlaylistName(strategy.nameOrder, dominantValue, nextValues),
+        dominant,
         bucket
       )
     );
 
-    // Continue splitting if more levels exist
+    // Continue traversing deeper
     processLevels({
       playlists,
       videos: bucket,
       dominantValue,
       strategy,
+      dominant,
       levelIndex: levelIndex + 1,
       values: nextValues,
     });
@@ -59,22 +59,30 @@ function processLevels({
 export default function playlistEngine(videos, config) {
   const playlists = [];
 
+  // Group by dominant field (genre for now)
   const dominantGroups = filterThreshold(
     groupBy(videos, config.dominant),
     config.threshold
   );
 
-  // Process each dominant bucket
   for (const [dominantValue, bucket] of Object.entries(dominantGroups)) {
     const strategy = config.strategies[dominantValue];
 
     if (!strategy) continue;
+
+    // Create parent playlist if required (e.g. Ghazal)
+    if (strategy.createParent) {
+      playlists.push(
+        createPlaylistCandidate(dominantValue, config.dominant, bucket)
+      );
+    }
 
     processLevels({
       playlists,
       videos: bucket,
       dominantValue,
       strategy,
+      dominant: config.dominant,
       levelIndex: 0,
       values: {},
     });
