@@ -1,86 +1,80 @@
 import THRESHOLDS from "../playlist/thresholds";
 
+const languageThenSubgenre = {
+  levels: [
+    {
+      key: "language",
+      threshold: THRESHOLDS.LANGUAGE,
+    },
+    {
+      key: "subgenre",
+      threshold: THRESHOLDS.SUBGENRE,
+    },
+  ],
+  nameOrder: ["language", "subgenre"],
+  createParent: false,
+  splitIfPossible: true,
+};
+
+const genreThenMood = {
+  levels: [
+    {
+      key: "mood",
+      threshold: THRESHOLDS.MOOD,
+    },
+  ],
+  nameOrder: ["genre", "mood"],
+  createParent: true,
+  splitIfPossible: true,
+};
+
 const GENRE_STRATEGIES = {
   dominant: "genre",
 
   threshold: THRESHOLDS.GENRE,
+
   strategies: {
-    Pop: {
-      levels: ["language", "subgenre"],
-      nameOrder: ["language", "subgenre"],
-      createParent: false,
-      splitIfPossible: true,
-    },
+    Pop: languageThenSubgenre,
 
-    Rock: {
-      levels: ["language", "subgenre"],
-      nameOrder: ["language", "subgenre"],
-      createParent: false,
-      splitIfPossible: true,
-    },
+    Rock: languageThenSubgenre,
 
-    "Hip-Hop / Rap": {
-      levels: ["language", "subgenre"],
-      nameOrder: ["language", "subgenre"],
-      createParent: false,
-      splitIfPossible: true,
-    },
+    "Hip-Hop / Rap": languageThenSubgenre,
 
-    Electronic: {
-      levels: ["language", "subgenre"],
-      nameOrder: ["language", "subgenre"],
-      createParent: false,
-      splitIfPossible: true,
-    },
+    Electronic: languageThenSubgenre,
 
     Folk: {
-      levels: ["language"],
+      levels: [
+        {
+          key: "language",
+          threshold: THRESHOLDS.LANGUAGE,
+        },
+      ],
       nameOrder: ["language", "genre"],
       createParent: false,
       splitIfPossible: true,
     },
 
     Bollywood: {
-      levels: ["mood"],
+      levels: [
+        {
+          key: "mood",
+          threshold: THRESHOLDS.MOOD,
+        },
+      ],
       nameOrder: ["genre", "mood"],
       createParent: false,
       splitIfPossible: true,
     },
 
-    Ghazal: {
-      levels: ["mood"],
-      nameOrder: ["genre", "mood"],
-      createParent: true,
-      splitIfPossible: true,
-    },
+    Ghazal: genreThenMood,
 
-    Qawwali: {
-      levels: ["mood"],
-      nameOrder: ["genre", "mood"],
-      createParent: true,
-      splitIfPossible: true,
-    },
+    Qawwali: genreThenMood,
 
-    "Indian Classical": {
-      levels: ["mood"],
-      nameOrder: ["genre", "mood"],
-      createParent: true,
-      splitIfPossible: true,
-    },
+    "Indian Classical": genreThenMood,
 
-    "K-Pop": {
-      levels: ["mood"],
-      nameOrder: ["genre", "mood"],
-      createParent: true,
-      splitIfPossible: true,
-    },
+    "K-Pop": genreThenMood,
 
-    "J-Pop": {
-      levels: ["mood"],
-      nameOrder: ["genre", "mood"],
-      createParent: true,
-      splitIfPossible: true,
-    },
+    "J-Pop": genreThenMood,
   },
 };
 
