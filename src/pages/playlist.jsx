@@ -4,6 +4,7 @@ import { getPlaylists, getPlaylistItems } from "../services/youtube";
 import { classifySongs } from "../services/llm/index.js";
 import { playlistEngine } from "../playlist/playlistEngine.js";
 import GENRE_STRATEGIES from "../strategy/genre";
+import validatePlaylists from "../utils/validatePlaylist";
 
 function PlaylistScreen({ user, setUser }) {
   const [playlists, setPlaylists] = useState([]);
@@ -88,6 +89,10 @@ function PlaylistScreen({ user, setUser }) {
       );
 
       console.log("Generated playlists:", generatedPlaylists);
+      const validatedPlaylists = validatePlaylists(generatedPlaylists);
+
+      console.log("VALIDATED:");
+      console.log(JSON.stringify(validatedPlaylists, null, 2));
     } catch (error) {
       console.error(error);
     }
