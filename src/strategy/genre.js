@@ -5,13 +5,15 @@ const languageThenSubgenre = {
     {
       key: "language",
       threshold: THRESHOLDS.LANGUAGE,
+      nameOrder: ["language", "genre"],
     },
     {
       key: "subgenre",
       threshold: THRESHOLDS.SUBGENRE,
+      nameOrder: ["language", "subgenre"],
     },
   ],
-  nameOrder: ["language", "subgenre"],
+
   createParent: false,
   splitIfPossible: true,
 };
@@ -21,9 +23,10 @@ const genreThenMood = {
     {
       key: "mood",
       threshold: THRESHOLDS.MOOD,
+      nameOrder: ["genre", "mood"],
     },
   ],
-  nameOrder: ["genre", "mood"],
+
   createParent: true,
   splitIfPossible: true,
 };
@@ -47,9 +50,10 @@ const GENRE_STRATEGIES = {
         {
           key: "language",
           threshold: THRESHOLDS.LANGUAGE,
+          nameOrder: ["language", "genre"],
         },
       ],
-      nameOrder: ["language", "genre"],
+
       createParent: false,
       splitIfPossible: true,
     },
@@ -59,9 +63,10 @@ const GENRE_STRATEGIES = {
         {
           key: "mood",
           threshold: THRESHOLDS.MOOD,
+          nameOrder: ["genre", "mood"],
         },
       ],
-      nameOrder: ["genre", "mood"],
+
       createParent: false,
       splitIfPossible: true,
     },

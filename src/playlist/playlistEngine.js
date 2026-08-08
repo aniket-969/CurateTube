@@ -1,9 +1,6 @@
 import groupBy from "../utils/groupBy";
 import filterThreshold from "../utils/filterThreshold";
-import {
-  buildPlaylistName,
-  createPlaylistCandidate,
-} from "../utils/createPlaylistCandidate";
+import {createPlaylistCandidate,buildPlaylistName} from "../utils/createPlaylistCandidate";
 
 function processLevels({
   playlists,
@@ -28,16 +25,18 @@ function processLevels({
   );
 
   for (const [value, bucket] of Object.entries(groups)) {
-    // Accumulate values discovered so far
+    // Accumulate values discovered so far,
+    // including the dominant value.
     const nextValues = {
       ...values,
+      [dominant]: dominantValue,
       [currentLevel.key]: value,
     };
 
     // Generate playlist for this bucket
     playlists.push(
       createPlaylistCandidate(
-        buildPlaylistName(strategy.nameOrder, dominantValue, nextValues),
+        buildPlaylistName(strategy.nameOrder, nextValues),
         dominant,
         bucket
       )
@@ -59,7 +58,7 @@ function processLevels({
 export default function playlistEngine(videos, config) {
   const playlists = [];
 
-  // Group by dominant field (genre for now)
+  // Group by dominant field
   const dominantGroups = filterThreshold(
     groupBy(videos, config.dominant),
     config.threshold
@@ -68,12 +67,17 @@ export default function playlistEngine(videos, config) {
   for (const [dominantValue, bucket] of Object.entries(dominantGroups)) {
     const strategy = config.strategies[dominantValue];
 
+    // Unknown/fixed-tag genres are simply ignored
     if (!strategy) continue;
 
-    // Create parent playlist if required (e.g. Ghazal)
+    // Create parent playlist if required
     if (strategy.createParent) {
       playlists.push(
-        createPlaylistCandidate(dominantValue, config.dominant, bucket)
+        createPlaylistCandidate(
+          dominantValue,
+          config.dominant,
+          bucket
+        )
       );
     }
 
