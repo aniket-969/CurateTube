@@ -31,17 +31,11 @@ export async function classifySongs(apiKey, songs) {
       ],
     });
 
-    console.timeEnd("API");
+    // console.timeEnd("API");
 
-    console.log(response.usage);
+    // console.log(response.usage);
 
     const text = response.choices?.[0]?.message?.content;
-
-    console.log("RAW RESPONSE:");
-    console.log(text);
-
-    console.log("RESPONSE LENGTH:", text.length);
-    console.log("LAST 500 CHARS:", text.slice(-500));
 
     if (!text) {
       throw new Error("No response content received from DeepSeek.");

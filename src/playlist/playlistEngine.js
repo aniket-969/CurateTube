@@ -61,7 +61,7 @@ function processLevels({
   }
 }
 
-export default function playlistEngine(videos, config) {
+export function playlistEngine(videos, config) {
   const playlists = [];
 
   // Group by dominant field

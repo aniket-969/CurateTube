@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { logout } from "../services/auth";
 import { getPlaylists, getPlaylistItems } from "../services/youtube";
 import { classifySongs } from "../services/llm/index.js";
+import { playlistEngine } from "../playlist/playlistEngine.js";
+import GENRE_STRATEGIES from "../strategy/genre";
 
 function PlaylistScreen({ user, setUser }) {
   const [playlists, setPlaylists] = useState([]);
@@ -79,13 +81,13 @@ function PlaylistScreen({ user, setUser }) {
       const results = await Promise.all(classificationJobs);
 
       console.log("All videos classified:", results);
+      const classifiedVideos = results.flat();
+      const generatedPlaylists = playlistEngine(
+        classifiedVideos,
+        GENRE_STRATEGIES
+      );
 
-      // const generatedPlaylists = playlistEngine(
-      //   classifiedVideos,
-      //   GENRE_STRATEGIES
-      // );
-
-      // console.log("Generated playlists:", generatedPlaylists);
+      console.log("Generated playlists:", generatedPlaylists);
     } catch (error) {
       console.error(error);
     }
