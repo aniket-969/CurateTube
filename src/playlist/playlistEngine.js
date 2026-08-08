@@ -1,6 +1,9 @@
-import groupBy from "../utils/groupBy";
-import filterThreshold from "../utils/filterThreshold";
-import {createPlaylistCandidate,buildPlaylistName} from "../utils/createPlaylistCandidate";
+import groupBy from "../utils/groupBy.js";
+import filterThreshold from "../utils/filterThreshold.js";
+import {
+  createPlaylistCandidate,
+  buildPlaylistName,
+} from "../utils/createPlaylistCandidate.js";
 
 function processLevels({
   playlists,
@@ -33,10 +36,13 @@ function processLevels({
       [currentLevel.key]: value,
     };
 
-    // Generate playlist for this bucket
+    // Generate playlist for this level
     playlists.push(
       createPlaylistCandidate(
-        buildPlaylistName(strategy.nameOrder, nextValues),
+        buildPlaylistName(
+          currentLevel.nameOrder,
+          nextValues
+        ),
         dominant,
         bucket
       )

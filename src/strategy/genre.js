@@ -1,4 +1,4 @@
-import THRESHOLDS from "../playlist/thresholds";
+import THRESHOLDS from "../playlist/thresholds.js";
 
 const languageThenSubgenre = {
   levels: [
