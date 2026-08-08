@@ -78,9 +78,7 @@ function PlaylistScreen({ user, setUser }) {
 
       const results = await Promise.all(classificationJobs);
 
-      const classifiedVideos = results.flat();
-
-      console.log("All videos classified:", classifiedVideos);
+      console.log("All videos classified:", results);
 
       // const generatedPlaylists = playlistEngine(
       //   classifiedVideos,
