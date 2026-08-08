@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { logout } from "../services/auth";
 import { getPlaylists, getPlaylistItems } from "../services/youtube";
+import { classifySongs } from "../services/llm/index.js";
 
 function PlaylistScreen({ user, setUser }) {
   const [playlists, setPlaylists] = useState([]);
   const [nextPageToken, setNextPageToken] = useState(null);
-
   const [search, setSearch] = useState("");
-
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -34,10 +33,7 @@ function PlaylistScreen({ user, setUser }) {
     setLoadingMore(true);
 
     try {
-      const data = await getPlaylists(
-        user.accessToken,
-        nextPageToken
-      );
+      const data = await getPlaylists(user.accessToken, nextPageToken);
 
       setPlaylists((prev) => [...prev, ...data.playlists]);
       setNextPageToken(data.nextPageToken);
@@ -52,6 +48,8 @@ function PlaylistScreen({ user, setUser }) {
     try {
       let pageToken = "";
 
+      const classificationJobs = [];
+
       while (true) {
         const { items, nextPageToken } = await getPlaylistItems(
           user.accessToken,
@@ -60,7 +58,14 @@ function PlaylistScreen({ user, setUser }) {
         );
 
         console.log(`Fetched ${items.length} videos`);
-        console.log(items);
+
+        const job = classifySongs(
+          "deepseek",
+          import.meta.env.VITE_DEEPSEEK_API_KEY,
+          items
+        );
+
+        classificationJobs.push(job);
 
         if (!nextPageToken) {
           break;
@@ -70,6 +75,19 @@ function PlaylistScreen({ user, setUser }) {
       }
 
       console.log("Finished fetching playlist.");
+
+      const results = await Promise.all(classificationJobs);
+
+      const classifiedVideos = results.flat();
+
+      console.log("All videos classified:", classifiedVideos);
+
+      // const generatedPlaylists = playlistEngine(
+      //   classifiedVideos,
+      //   GENRE_STRATEGIES
+      // );
+
+      // console.log("Generated playlists:", generatedPlaylists);
     } catch (error) {
       console.error(error);
     }
@@ -102,9 +120,7 @@ function PlaylistScreen({ user, setUser }) {
 
           <div>
             <p className="font-semibold">{user.profile.name}</p>
-            <p className="text-sm text-gray-500">
-              {user.profile.email}
-            </p>
+            <p className="text-sm text-gray-500">{user.profile.email}</p>
           </div>
         </div>
 
@@ -162,9 +178,7 @@ function PlaylistScreen({ user, setUser }) {
             <p>No matching playlists found.</p>
 
             {nextPageToken && (
-              <p className="mt-2">
-                Try loading more playlists.
-              </p>
+              <p className="mt-2">Try loading more playlists.</p>
             )}
           </div>
         )}
