@@ -1,9 +1,9 @@
-import groupBy from "../utils/groupBy.js";
-import filterThreshold from "../utils/filterThreshold.js";
+import groupBy from "../utils/groupBy";
+import filterThreshold from "../utils/filterThreshold";
 import {
   createPlaylistCandidate,
   buildPlaylistName,
-} from "../utils/createPlaylistCandidate.js";
+} from "../utils/createPlaylistCandidate";
 
 function processLevels({
   playlists,
@@ -28,8 +28,7 @@ function processLevels({
   );
 
   for (const [value, bucket] of Object.entries(groups)) {
-    // Accumulate values discovered so far,
-    // including the dominant value.
+    // Keep track of all values discovered so far
     const nextValues = {
       ...values,
       [dominant]: dominantValue,
@@ -44,7 +43,12 @@ function processLevels({
           nextValues
         ),
         dominant,
-        bucket
+        bucket,
+        {
+          dominantValue,
+          levelIndex,
+          values: nextValues,
+        }
       )
     );
 
@@ -82,7 +86,14 @@ export function playlistEngine(videos, config) {
         createPlaylistCandidate(
           dominantValue,
           config.dominant,
-          bucket
+          bucket,
+          {
+            dominantValue,
+            levelIndex: -1,
+            values: {
+              [config.dominant]: dominantValue,
+            },
+          }
         )
       );
     }

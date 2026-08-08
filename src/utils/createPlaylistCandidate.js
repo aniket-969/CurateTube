@@ -1,8 +1,14 @@
-export function createPlaylistCandidate(name, type, videos) {
+export function createPlaylistCandidate(
+  name,
+  type,
+  videos,
+  meta = {}
+) {
   return {
     name,
     type,
     videoIds: videos.map((video) => video.videoId),
+    meta,
   };
 }
 
