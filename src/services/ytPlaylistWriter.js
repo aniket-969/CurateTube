@@ -9,8 +9,7 @@ import { createPlaylistKey } from "../utils/createPlaylistCandidate";
 const YTWL_PREFIX = "YTWL:v1:";
 
 function createYTWLId(playlist) {
-  console.log("[YTWL] Creating playlist ID...", playlist);
-
+ 
   const ytwlId = `${YTWL_PREFIX}${createPlaylistKey(playlist.meta.values)}`;
 
   console.log("[YTWL] Generated ytwlId:", ytwlId);

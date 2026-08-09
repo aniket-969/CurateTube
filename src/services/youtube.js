@@ -89,13 +89,7 @@ export async function getPlaylistItems(
   };
 }
 
-export async function getPlaylistsForWriter(
-  accessToken,
-  pageToken = ""
-) {
-  console.log("[YouTube] getPlaylistsForWriter START");
-  console.log("[YouTube] pageToken:", pageToken || "(first page)");
-
+export async function getPlaylistsForWriter(accessToken, pageToken = "") {
   const params = new URLSearchParams({
     part: "snippet,contentDetails",
     mine: "true",
@@ -108,9 +102,6 @@ export async function getPlaylistsForWriter(
 
   const url = `${API}/playlists?${params}`;
 
-  console.log("[YouTube] Fetching playlists...");
-  console.log("[YouTube] URL:", url);
-
   let response;
 
   try {
@@ -120,36 +111,18 @@ export async function getPlaylistsForWriter(
       },
     });
   } catch (error) {
-    console.error(
-      "[YouTube] getPlaylistsForWriter NETWORK ERROR:",
-      error
-    );
+    console.error("[YouTube] getPlaylistsForWriter NETWORK ERROR:", error);
 
     throw error;
   }
 
-  console.log(
-    "[YouTube] getPlaylistsForWriter HTTP status:",
-    response.status,
-    response.statusText
-  );
-
   const data = await response.json();
 
-  console.log(
-    "[YouTube] getPlaylistsForWriter response:",
-    data
-  );
-
   if (!response.ok) {
-    console.error(
-      "[YouTube] getPlaylistsForWriter FAILED:",
-      data
-    );
+    console.error("[YouTube] getPlaylistsForWriter FAILED:", data);
 
     throw new Error(
-      data?.error?.message ||
-        "Failed to fetch playlists for writer"
+      data?.error?.message || "Failed to fetch playlists for writer"
     );
   }
 
@@ -157,20 +130,15 @@ export async function getPlaylistsForWriter(
     playlists: (data.items || []).map((playlist) => ({
       id: playlist.id,
       title: playlist.snippet.title,
-      description:
-        playlist.snippet.description ?? "",
+      description: playlist.snippet.description ?? "",
     })),
-    nextPageToken:
-      data.nextPageToken ?? null,
+    nextPageToken: data.nextPageToken ?? null,
   };
 
-  console.log(
-    "[YouTube] getPlaylistsForWriter SUCCESS:",
-    {
-      playlistCount: result.playlists.length,
-      hasNextPage: Boolean(result.nextPageToken),
-    }
-  );
+  console.log("[YouTube] getPlaylistsForWriter SUCCESS:", {
+    playlistCount: result.playlists.length,
+    hasNextPage: Boolean(result.nextPageToken),
+  });
 
   return result;
 }
@@ -180,16 +148,6 @@ export async function getPlaylistItemsForWriter(
   playlistId,
   pageToken = ""
 ) {
-  console.log(
-    "[YouTube] getPlaylistItemsForWriter START"
-  );
-
-  console.log("[YouTube] playlistId:", playlistId);
-  console.log(
-    "[YouTube] pageToken:",
-    pageToken || "(first page)"
-  );
-
   const params = new URLSearchParams({
     part: "contentDetails",
     playlistId,
@@ -202,11 +160,6 @@ export async function getPlaylistItemsForWriter(
 
   const url = `${API}/playlistItems?${params}`;
 
-  console.log(
-    "[YouTube] Fetching playlist items..."
-  );
-  console.log("[YouTube] URL:", url);
-
   let response;
 
   try {
@@ -216,65 +169,35 @@ export async function getPlaylistItemsForWriter(
       },
     });
   } catch (error) {
-    console.error(
-      "[YouTube] getPlaylistItemsForWriter NETWORK ERROR:",
-      error
-    );
+    console.error("[YouTube] getPlaylistItemsForWriter NETWORK ERROR:", error);
 
     throw error;
   }
 
-  console.log(
-    "[YouTube] getPlaylistItemsForWriter HTTP status:",
-    response.status,
-    response.statusText
-  );
-
   const data = await response.json();
 
-  console.log(
-    "[YouTube] getPlaylistItemsForWriter response:",
-    data
-  );
-
   if (!response.ok) {
-    console.error(
-      "[YouTube] getPlaylistItemsForWriter FAILED:",
-      data
-    );
+    console.error("[YouTube] getPlaylistItemsForWriter FAILED:", data);
 
     throw new Error(
-      data?.error?.message ||
-        "Failed to fetch playlist items for writer"
+      data?.error?.message || "Failed to fetch playlist items for writer"
     );
   }
 
   const items = (data.items || [])
-    .map(
-      (item) =>
-        item.contentDetails?.videoId
-    )
+    .map((item) => item.contentDetails?.videoId)
     .filter(Boolean);
 
   const result = {
     items,
-    nextPageToken:
-      data.nextPageToken ?? null,
+    nextPageToken: data.nextPageToken ?? null,
   };
 
-  console.log(
-    "[YouTube] getPlaylistItemsForWriter SUCCESS:",
-    {
-      playlistId,
-      videoCount: result.items.length,
-      hasNextPage: Boolean(result.nextPageToken),
-    }
-  );
-
-  console.log(
-    "[YouTube] Video IDs:",
-    result.items
-  );
+  console.log("[YouTube] getPlaylistItemsForWriter SUCCESS:", {
+    playlistId,
+    videoCount: result.items.length,
+    hasNextPage: Boolean(result.nextPageToken),
+  });
 
   return result;
 }
@@ -285,15 +208,6 @@ export async function createPlaylist(
   description = "",
   privacyStatus = "private"
 ) {
-  console.log("[YouTube] createPlaylist START");
-
-  console.log("[YouTube] title:", title);
-  console.log("[YouTube] privacyStatus:", privacyStatus);
-  console.log(
-    "[YouTube] description:",
-    description
-  );
-
   const requestBody = {
     snippet: {
       title,
@@ -304,90 +218,39 @@ export async function createPlaylist(
     },
   };
 
-  console.log(
-    "[YouTube] Creating playlist with body:",
-    requestBody
-  );
-
   let response;
 
   try {
-    response = await fetch(
-      `${API}/playlists?part=snippet,status`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    response = await fetch(`${API}/playlists?part=snippet,status`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
   } catch (error) {
-    console.error(
-      "[YouTube] createPlaylist NETWORK ERROR:",
-      error
-    );
+    console.error("[YouTube] createPlaylist NETWORK ERROR:", error);
 
     throw error;
   }
 
-  console.log(
-    "[YouTube] createPlaylist HTTP status:",
-    response.status,
-    response.statusText
-  );
-
   const data = await response.json();
 
-  console.log(
-    "[YouTube] createPlaylist response:",
-    data
-  );
-
   if (!response.ok) {
-    console.error(
-      "[YouTube] createPlaylist FAILED:",
-      data
-    );
+    console.error("[YouTube] createPlaylist FAILED:", data);
 
     throw new Error(
-      data?.error?.message ||
-        "Failed to create YouTube playlist"
+      data?.error?.message || "Failed to create YouTube playlist"
     );
   }
 
-  console.log(
-    "[YouTube] createPlaylist SUCCESS"
-  );
-
-  console.log(
-    "[YouTube] Created playlist ID:",
-    data.id
-  );
+  console.log("Created playlist sucess", data.id);
 
   return data;
 }
 
-export async function addVideoToPlaylist(
-  accessToken,
-  playlistId,
-  videoId
-) {
-  console.log(
-    "[YouTube] addVideoToPlaylist START"
-  );
-
-  console.log(
-    "[YouTube] playlistId:",
-    playlistId
-  );
-
-  console.log(
-    "[YouTube] videoId:",
-    videoId
-  );
-
+export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
   const requestBody = {
     snippet: {
       playlistId,
@@ -398,71 +261,84 @@ export async function addVideoToPlaylist(
     },
   };
 
-  console.log(
-    "[YouTube] Adding video with body:",
-    requestBody
-  );
+  const maxAttempts = 5;
 
-  let response;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let response;
 
-  try {
-    response = await fetch(
-      `${API}/playlistItems?part=snippet`,
-      {
+    try {
+      response = await fetch(`${API}/playlistItems?part=snippet`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
+      });
+    } catch (error) {
+      console.error("[YouTube] addVideoToPlaylist NETWORK ERROR:", error);
+
+      if (attempt < maxAttempts) {
+        const delay = 1000 * 2 ** (attempt - 1);
+
+        console.log(`[YouTube] Retrying ${videoId} in ${delay}ms...`);
+
+        await new Promise((resolve) => setTimeout(resolve, delay));
+
+        continue;
       }
-    );
-  } catch (error) {
-    console.error(
-      "[YouTube] addVideoToPlaylist NETWORK ERROR:",
-      error
-    );
 
-    throw error;
-  }
-
-  console.log(
-    "[YouTube] addVideoToPlaylist HTTP status:",
-    response.status,
-    response.statusText
-  );
-
-  const data = await response.json();
-
-  console.log(
-    "[YouTube] addVideoToPlaylist response:",
-    data
-  );
-
-  if (!response.ok) {
-    console.error(
-      "[YouTube] addVideoToPlaylist FAILED:",
-      {
-        status: response.status,
-        statusText: response.statusText,
-        error: data?.error,
-      }
-    );
-
-    throw new Error(
-      data?.error?.message ||
-        "Failed to add video to playlist"
-    );
-  }
-
-  console.log(
-    "[YouTube] addVideoToPlaylist SUCCESS:",
-    {
-      playlistId,
-      videoId,
-      playlistItemId: data.id,
+      throw error;
     }
-  );
 
-  return data;
+    const data = await response.json();
+
+    if (response.ok) {
+      // console.log("[YouTube] addVideoToPlaylist SUCCESS:", {
+      //   playlistId,
+      //   videoId,
+      //   playlistItemId: data.id,
+      //   attempt,
+      // });
+
+      return data;
+    }
+
+    const reason = data?.error?.errors?.[0]?.reason;
+
+    const isRetryable =
+      response.status === 409 && reason === "SERVICE_UNAVAILABLE";
+
+    console.error("[YouTube] addVideoToPlaylist FAILED:", {
+      status: response.status,
+      statusText: response.statusText,
+      error: data?.error,
+      attempt,
+      retryable: isRetryable,
+    });
+
+    if (!isRetryable || attempt === maxAttempts) {
+      const error = new Error(
+        data?.error?.message || "Failed to add video to playlist"
+      );
+
+      error.status = response.status;
+      error.reason = reason;
+      error.details = data?.error;
+
+      throw error;
+    }
+
+    const delay = 1000 * 2 ** (attempt - 1);
+
+    console.log(
+      `[YouTube] SERVICE_UNAVAILABLE for ${videoId}. ` +
+        `Retrying in ${delay}ms ` +
+        `(attempt ${attempt + 1}/${maxAttempts})`
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  throw new Error("Failed to add video to playlist");
 }
