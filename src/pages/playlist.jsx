@@ -92,7 +92,7 @@ function PlaylistScreen({ user, setUser }) {
       const validatedPlaylists = validatePlaylists(generatedPlaylists);
 
       console.log("VALIDATED:");
-      console.log(JSON.stringify(validatedPlaylists, null, 2));
+      console.log(validatedPlaylists);
     } catch (error) {
       console.error(error);
     }
