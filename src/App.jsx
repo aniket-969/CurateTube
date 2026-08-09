@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import LoginScreen from "./pages/Login";
 import PlaylistScreen from "./pages/Playlist";
-import GeneratedPlaylists from "./pages/GeneratedPlaylists";
+import GeneratedPlaylists from "./pages/generatedPlaylist";
 import { validateStoredUser } from "./services/auth";
 
 function App() {
