@@ -4,13 +4,13 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
   const [selected, setSelected] = useState({});
   const [names, setNames] = useState({});
 
-  // Select all generated playlists and use their original names initially
+  // Select only recommended playlists by default
   useEffect(() => {
     const initialSelected = {};
     const initialNames = {};
 
     playlists.forEach((playlist, index) => {
-      initialSelected[index] = true;
+      initialSelected[index] = !!playlist.recommended;
       initialNames[index] = playlist.name;
     });
 
@@ -35,7 +35,9 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
   const selectedCount = Object.values(selected).filter(Boolean).length;
 
   const groupedPlaylists = useMemo(() => {
-    return playlists.reduce((groups, playlist, index) => {
+    const groups = {};
+
+    playlists.forEach((playlist, index) => {
       const type = playlist.type || "other";
 
       if (!groups[type]) {
@@ -46,9 +48,18 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
         ...playlist,
         index,
       });
+    });
 
-      return groups;
-    }, {});
+    // Sort each group by number of songs, largest first
+    Object.values(groups).forEach((group) => {
+      group.sort(
+        (a, b) =>
+          (b.videoIds?.length ?? 0) -
+          (a.videoIds?.length ?? 0)
+      );
+    });
+
+    return groups;
   }, [playlists]);
 
   function handleGenerate() {
@@ -78,7 +89,9 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-lg font-semibold">Generated Playlists</h1>
+        <h1 className="text-lg font-semibold">
+          Generated Playlists
+        </h1>
 
         <p className="mt-1 text-sm text-gray-500">
           Select the playlists you want to create.
@@ -87,52 +100,61 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
 
       {/* Playlist list */}
       <div className="flex-1 overflow-y-auto space-y-5">
-        {Object.entries(groupedPlaylists).map(([type, typePlaylists]) => (
-          <section key={type}>
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              {type}
-            </h2>
+        {Object.entries(groupedPlaylists).map(
+          ([type, typePlaylists]) => (
+            <section key={type}>
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                {type}
+              </h2>
 
-            <div className="space-y-2">
-              {typePlaylists.map((playlist) => {
-                const { index } = playlist;
-                const isSelected = !!selected[index];
+              <div className="space-y-2">
+                {typePlaylists.map((playlist) => {
+                  const { index } = playlist;
+                  const isSelected = !!selected[index];
 
-                return (
-                  <div
-                    key={index}
-                    className="rounded-lg border px-3 py-2.5"
-                  >
-                    <div className="flex items-center gap-3">
-                      {/* Checkbox */}
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => togglePlaylist(index)}
-                        className="h-4 w-4 shrink-0"
-                      />
+                  return (
+                    <div
+                      key={index}
+                      className="rounded-lg border px-3 py-2.5"
+                    >
+                      <div className="flex items-center gap-3">
+                        {/* Checkbox */}
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() =>
+                            togglePlaylist(index)
+                          }
+                          className="h-4 w-4 shrink-0"
+                        />
 
-                      {/* Playlist name */}
-                      <input
-                        type="text"
-                        value={names[index] ?? playlist.name}
-                        onChange={(e) =>
-                          handleNameChange(index, e.target.value)
-                        }
-                        className="min-w-0 flex-1 bg-transparent text-sm font-medium outline-none"
-                      />
+                        {/* Playlist name */}
+                        <input
+                          type="text"
+                          value={
+                            names[index] ?? playlist.name
+                          }
+                          onChange={(e) =>
+                            handleNameChange(
+                              index,
+                              e.target.value
+                            )
+                          }
+                          className="min-w-0 flex-1 bg-transparent text-sm font-medium outline-none"
+                        />
 
-                      {/* Song count */}
-                      <span className="shrink-0 text-xs text-gray-500">
-                        {playlist.videoIds?.length ?? 0} songs
-                      </span>
+                        {/* Song count */}
+                        <span className="shrink-0 text-xs text-gray-500">
+                          {playlist.videoIds?.length ?? 0} songs
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        ))}
+                  );
+                })}
+              </div>
+            </section>
+          )
+        )}
       </div>
 
       {/* Bottom action */}
