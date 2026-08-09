@@ -88,3 +88,76 @@ export async function getPlaylistItems(
     nextPageToken,
   };
 }
+
+export async function createPlaylist(
+  accessToken,
+  title,
+  description = "",
+  privacyStatus = "private"
+) {
+  const response = await fetch(
+    `${API}/playlists?part=snippet,status`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        snippet: {
+          title,
+          description,
+        },
+        status: {
+          privacyStatus,
+        },
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error?.message || "Failed to create YouTube playlist"
+    );
+  }
+
+  return data;
+}
+
+export async function addVideoToPlaylist(
+  accessToken,
+  playlistId,
+  videoId
+) {
+  const response = await fetch(
+    `${API}/playlistItems?part=snippet`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        snippet: {
+          playlistId,
+          resourceId: {
+            kind: "youtube#video",
+            videoId,
+          },
+        },
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error?.message || "Failed to add video to playlist"
+    );
+  }
+
+  return data;
+}
