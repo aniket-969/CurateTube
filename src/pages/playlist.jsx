@@ -5,13 +5,18 @@ import { classifySongs } from "../services/llm/index.js";
 import { playlistEngine } from "../playlist/playlistEngine.js";
 import GENRE_STRATEGIES from "../strategy/genre";
 import validatePlaylists from "../utils/validatePlaylist";
+import recommendPlaylists from "../playlist/playlistRecommender.js";
 
-function PlaylistScreen({ user, setUser }) {
+function PlaylistScreen({ user, setUser, onGenerated }) {
   const [playlists, setPlaylists] = useState([]);
   const [nextPageToken, setNextPageToken] = useState(null);
+
   const [search, setSearch] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     loadInitialPlaylists();
@@ -36,9 +41,16 @@ function PlaylistScreen({ user, setUser }) {
     setLoadingMore(true);
 
     try {
-      const data = await getPlaylists(user.accessToken, nextPageToken);
+      const data = await getPlaylists(
+        user.accessToken,
+        nextPageToken
+      );
 
-      setPlaylists((prev) => [...prev, ...data.playlists]);
+      setPlaylists((prev) => [
+        ...prev,
+        ...data.playlists,
+      ]);
+
       setNextPageToken(data.nextPageToken);
     } catch (error) {
       console.error(error);
@@ -48,20 +60,30 @@ function PlaylistScreen({ user, setUser }) {
   }
 
   async function handlePlaylistClick(playlist) {
+    if (processing) return;
+
+    setProcessing(true);
+
     try {
       let pageToken = "";
 
       const classificationJobs = [];
 
       while (true) {
-        const { items, nextPageToken } = await getPlaylistItems(
-          user.accessToken,
-          playlist.id,
-          pageToken
+        const { items, nextPageToken } =
+          await getPlaylistItems(
+            user.accessToken,
+            playlist.id,
+            pageToken
+          );
+
+        console.log(
+          `Fetched ${items.length} videos`
         );
 
-        console.log(`Fetched ${items.length} videos`);
-
+        // Start LLM processing immediately.
+        // The YouTube fetching loop continues while
+        // this request is running.
         const job = classifySongs(
           "deepseek",
           import.meta.env.VITE_DEEPSEEK_API_KEY,
@@ -79,22 +101,63 @@ function PlaylistScreen({ user, setUser }) {
 
       console.log("Finished fetching playlist.");
 
-      const results = await Promise.all(classificationJobs);
+      // Wait for every LLM batch to finish.
+      const results = await Promise.all(
+        classificationJobs
+      );
 
-      console.log("All videos classified:", results);
+      console.log(
+        "All videos classified:",
+        results
+      );
+
+      // Combine all classified batches.
       const classifiedVideos = results.flat();
+
+      console.log(
+        "Total classified videos:",
+        classifiedVideos.length
+      );
+
+      // Run playlist engine ONCE on the complete dataset.
       const generatedPlaylists = playlistEngine(
         classifiedVideos,
         GENRE_STRATEGIES
       );
 
-      console.log("Generated playlists:", generatedPlaylists);
-      const validatedPlaylists = validatePlaylists(generatedPlaylists);
+      console.log(
+        "Generated playlists:",
+        generatedPlaylists
+      );
 
-      console.log("VALIDATED:");
-      console.log(validatedPlaylists);
+      // Remove invalid candidates.
+      const validatedPlaylists =
+        validatePlaylists(generatedPlaylists);
+
+      console.log(
+        "VALIDATED:",
+        validatedPlaylists
+      );
+
+      // Decide which valid playlists should be
+      // selected by default in the UI.
+      const recommendedPlaylists =
+        recommendPlaylists(validatedPlaylists);
+
+      console.log(
+        "RECOMMENDED:",
+        recommendedPlaylists
+      );
+
+      // Hand the final result to App.
+      onGenerated(recommendedPlaylists);
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Playlist processing failed:",
+        error
+      );
+    } finally {
+      setProcessing(false);
     }
   }
 
@@ -109,69 +172,98 @@ function PlaylistScreen({ user, setUser }) {
     if (!query) return playlists;
 
     return playlists.filter((playlist) =>
-      playlist.title.toLowerCase().includes(query)
+      playlist.title
+        .toLowerCase()
+        .includes(query)
     );
   }, [playlists, search]);
 
   return (
-    <div className="w-[380px] h-[500px] p-5 flex flex-col">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <img
-            src={user.profile.picture}
-            alt={user.profile.name}
-            className="w-10 h-10 rounded-full"
-          />
+    <div className="flex h-full flex-col p-4">
+      {/* Header */}
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <p className="font-semibold">
+            {user.profile.name}
+          </p>
 
-          <div>
-            <p className="font-semibold">{user.profile.name}</p>
-            <p className="text-sm text-gray-500">{user.profile.email}</p>
-          </div>
+          <p className="text-sm text-gray-500">
+            {user.profile.email}
+          </p>
         </div>
 
         <button
           onClick={handleLogout}
-          className="rounded-lg bg-gray-200 px-3 py-1.5 text-sm"
+          disabled={processing}
+          className="rounded-lg bg-gray-200 px-3 py-1.5 text-sm disabled:opacity-50"
         >
           Logout
         </button>
       </div>
 
-      <div className="flex gap-2 mb-4">
+      {/* Search / Load more */}
+      <div className="mb-4 flex gap-2">
         <input
           type="text"
           placeholder="Search playlists..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 rounded-lg border px-3 py-2 text-sm outline-none"
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+          disabled={processing}
+          className="flex-1 rounded-lg border px-3 py-2 text-sm outline-none disabled:bg-gray-100"
         />
 
         {nextPageToken ? (
           <button
             onClick={handleLoadMore}
-            disabled={loadingMore}
-            className="rounded-lg border px-3 py-2 text-sm whitespace-nowrap disabled:opacity-50"
+            disabled={
+              loadingMore || processing
+            }
+            className="whitespace-nowrap rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
           >
-            {loadingMore ? "Loading..." : "Load more"}
+            {loadingMore
+              ? "Loading..."
+              : "Load more"}
           </button>
         ) : (
-          <div className="flex items-center px-2 text-xs text-gray-500 whitespace-nowrap">
+          <div className="flex items-center whitespace-nowrap px-2 text-xs text-gray-500">
             ✓ All Loaded
           </div>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-2">
-        {loading ? (
+      {/* Playlist list */}
+      <div className="flex-1 space-y-2 overflow-y-auto">
+        {processing ? (
+          <div className="flex h-full flex-col items-center justify-center text-center">
+            <p className="font-medium">
+              Processing playlist...
+            </p>
+
+            <p className="mt-1 text-sm text-gray-500">
+              Fetching videos and analyzing them.
+            </p>
+
+            <p className="mt-3 text-xs text-gray-400">
+              You can keep this window open while
+              processing completes.
+            </p>
+          </div>
+        ) : loading ? (
           <p>Loading playlists...</p>
         ) : filteredPlaylists.length ? (
           filteredPlaylists.map((playlist) => (
             <button
               key={playlist.id}
-              onClick={() => handlePlaylistClick(playlist)}
+              onClick={() =>
+                handlePlaylistClick(playlist)
+              }
               className="w-full rounded-lg border p-3 text-left hover:bg-gray-100"
             >
-              <div className="font-medium">{playlist.title}</div>
+              <div className="font-medium">
+                {playlist.title}
+              </div>
 
               <div className="text-sm text-gray-500">
                 {playlist.itemCount} videos
@@ -179,11 +271,13 @@ function PlaylistScreen({ user, setUser }) {
             </button>
           ))
         ) : (
-          <div className="text-center text-sm text-gray-500 py-10">
+          <div className="py-10 text-center text-sm text-gray-500">
             <p>No matching playlists found.</p>
 
             {nextPageToken && (
-              <p className="mt-2">Try loading more playlists.</p>
+              <p className="mt-2">
+                Try loading more playlists.
+              </p>
             )}
           </div>
         )}
