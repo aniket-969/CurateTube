@@ -89,6 +89,94 @@ export async function getPlaylistItems(
   };
 }
 
+export async function getPlaylistsForWriter(
+  accessToken,
+  pageToken = ""
+) {
+  const params = new URLSearchParams({
+    part: "snippet,contentDetails",
+    mine: "true",
+    maxResults: "50",
+  });
+
+  if (pageToken) {
+    params.set("pageToken", pageToken);
+  }
+
+  const response = await fetch(
+    `${API}/playlists?${params}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to fetch playlists for writer"
+    );
+  }
+
+  const data = await response.json();
+
+  return {
+    playlists: data.items.map((playlist) => ({
+      id: playlist.id,
+      title: playlist.snippet.title,
+      description:
+        playlist.snippet.description ?? "",
+    })),
+    nextPageToken:
+      data.nextPageToken ?? null,
+  };
+}
+
+export async function getPlaylistItemsForWriter(
+  accessToken,
+  playlistId,
+  pageToken = ""
+) {
+  const params = new URLSearchParams({
+    part: "contentDetails",
+    playlistId,
+    maxResults: "50",
+  });
+
+  if (pageToken) {
+    params.set("pageToken", pageToken);
+  }
+
+  const response = await fetch(
+    `${API}/playlistItems?${params}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to fetch playlist items for writer"
+    );
+  }
+
+  const data = await response.json();
+
+  return {
+    items: data.items
+      .map(
+        (item) =>
+          item.contentDetails?.videoId
+      )
+      .filter(Boolean),
+
+    nextPageToken:
+      data.nextPageToken ?? null,
+  };
+}
+
 export async function createPlaylist(
   accessToken,
   title,
