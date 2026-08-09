@@ -3,19 +3,20 @@ import LoginScreen from "./pages/Login";
 import PlaylistScreen from "./pages/Playlist";
 import GeneratedPlaylists from "./pages/generatedPlaylist";
 import { validateStoredUser } from "./services/auth";
+import { syncGeneratedPlaylist } from "./services/ytPlaylistWriter";
 
 function App() {
   const [user, setUser] = useState(undefined);
 
   const [screen, setScreen] = useState("playlists");
 
-  const [generatedPlaylists, setGeneratedPlaylists] =
-    useState([]);
+  const [generatedPlaylists, setGeneratedPlaylists] = useState([]);
 
   useEffect(() => {
     async function init() {
-      const user = await validateStoredUser();
-      setUser(user);
+      const storedUser = await validateStoredUser();
+
+      setUser(storedUser);
     }
 
     init();
@@ -30,16 +31,38 @@ function App() {
     setScreen("playlists");
   }
 
+  async function handleGenerate(selectedPlaylists) {
+    console.log("Creating YouTube playlists:", selectedPlaylists);
+
+    const results = [];
+
+    for (const playlist of selectedPlaylists) {
+      try {
+        const result = await syncGeneratedPlaylist(user.accessToken, playlist);
+
+        results.push(result);
+      } catch (error) {
+        console.error(`Failed to sync playlist "${playlist.name}":`, error);
+
+        results.push({
+          name: playlist.name,
+          status: "failed",
+          error: error.message,
+        });
+      }
+    }
+
+    console.log("YouTube playlist creation results:", results);
+
+    return results;
+  }
+
   if (user === undefined) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (!user) {
-    return <LoginScreen setUser={setUser} />;
+    return <LoginScreen />;
   }
 
   if (screen === "generated") {
@@ -47,12 +70,7 @@ function App() {
       <GeneratedPlaylists
         playlists={generatedPlaylists}
         onBack={handleBackToPlaylists}
-        onGenerate={(selectedPlaylists) => {
-          console.log(
-            "Ready to create YouTube playlists:",
-            selectedPlaylists
-          );
-        }}
+        onGenerate={handleGenerate}
       />
     );
   }
