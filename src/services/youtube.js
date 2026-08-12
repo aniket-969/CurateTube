@@ -217,7 +217,7 @@ export async function createPlaylist(
       privacyStatus,
     },
   };
-
+console.log("creating playlist",title)
   let response;
 
   try {
@@ -266,7 +266,7 @@ export async function addVideoToPlaylist(
   };
 
   const maxAttempts = 5;
-
+console.log("Trying videoId",videoId,playlistId)
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     let response;
 
@@ -312,10 +312,7 @@ export async function addVideoToPlaylist(
 
     const data = await response.json();
 
-    // --------------------------------------------
     // SUCCESS
-    // --------------------------------------------
-
     if (response.ok) {
       console.log(
         "[YouTube] addVideoToPlaylist SUCCESS:",
@@ -378,6 +375,7 @@ export async function addVideoToPlaylist(
     }
 
     // RETRY
+
     const delay =
       1000 * 2 ** (attempt - 1);
 
