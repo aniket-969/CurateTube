@@ -250,7 +250,11 @@ export async function createPlaylist(
   return data;
 }
 
-export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
+export async function addVideoToPlaylist(
+  accessToken,
+  playlistId,
+  videoId
+) {
   const requestBody = {
     snippet: {
       playlistId,
@@ -267,59 +271,103 @@ export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
     let response;
 
     try {
-      response = await fetch(`${API}/playlistItems?part=snippet`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      response = await fetch(
+        `${API}/playlistItems?part=snippet`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
     } catch (error) {
-      console.error("[YouTube] addVideoToPlaylist NETWORK ERROR:", error);
+      console.error(
+        "[YouTube] addVideoToPlaylist NETWORK ERROR:",
+        {
+          videoId,
+          attempt,
+          error,
+        }
+      );
 
-      if (attempt < maxAttempts) {
-        const delay = 1000 * 2 ** (attempt - 1);
-
-        console.log(`[YouTube] Retrying ${videoId} in ${delay}ms...`);
-
-        await new Promise((resolve) => setTimeout(resolve, delay));
-
-        continue;
+      if (attempt === maxAttempts) {
+        throw error;
       }
 
-      throw error;
+      const delay =
+        1000 * 2 ** (attempt - 1);
+
+      console.log(
+        `[YouTube] Network error. Retrying ${videoId} in ${delay}ms...`
+      );
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, delay)
+      );
+
+      continue;
     }
 
     const data = await response.json();
 
+    // --------------------------------------------
+    // SUCCESS
+    // --------------------------------------------
+
     if (response.ok) {
-      // console.log("[YouTube] addVideoToPlaylist SUCCESS:", {
-      //   playlistId,
-      //   videoId,
-      //   playlistItemId: data.id,
-      //   attempt,
-      // });
+      console.log(
+        "[YouTube] addVideoToPlaylist SUCCESS:",
+        {
+          playlistId,
+          videoId,
+          playlistItemId: data.id,
+          attempt,
+        }
+      );
 
       return data;
     }
 
-    const reason = data?.error?.errors?.[0]?.reason;
+    // --------------------------------------------
+    // ERROR DETAILS
+    // --------------------------------------------
+
+    const reason =
+      data?.error?.errors?.[0]?.reason;
+
+    const isPlaylistPropagationError =
+      response.status === 404 &&
+      reason === "playlistNotFound";
+
+    const isServiceUnavailable =
+      response.status === 409 &&
+      reason === "SERVICE_UNAVAILABLE";
 
     const isRetryable =
-      response.status === 409 && reason === "SERVICE_UNAVAILABLE";
+      isPlaylistPropagationError ||
+      isServiceUnavailable;
 
-    console.error("[YouTube] addVideoToPlaylist FAILED:", {
-      status: response.status,
-      statusText: response.statusText,
-      error: data?.error,
-      attempt,
-      retryable: isRetryable,
-    });
+    console.error(
+      "[YouTube] addVideoToPlaylist FAILED:",
+      {
+        playlistId,
+        videoId,
+        status: response.status,
+        statusText: response.statusText,
+        reason,
+        error: data?.error,
+        attempt,
+        retryable: isRetryable,
+      }
+    );
 
+    // PERMANENT ERROR
     if (!isRetryable || attempt === maxAttempts) {
       const error = new Error(
-        data?.error?.message || "Failed to add video to playlist"
+        data?.error?.message ||
+          "Failed to add video to playlist"
       );
 
       error.status = response.status;
@@ -329,16 +377,22 @@ export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
       throw error;
     }
 
-    const delay = 1000 * 2 ** (attempt - 1);
+    // RETRY
+    const delay =
+      1000 * 2 ** (attempt - 1);
 
     console.log(
-      `[YouTube] SERVICE_UNAVAILABLE for ${videoId}. ` +
-        `Retrying in ${delay}ms ` +
-        `(attempt ${attempt + 1}/${maxAttempts})`
+      `[YouTube] Retrying ${videoId} in ${delay}ms ` +
+        `(reason: ${reason}, ` +
+        `attempt ${attempt + 1}/${maxAttempts})`
     );
 
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    await new Promise((resolve) =>
+      setTimeout(resolve, delay)
+    );
   }
 
-  throw new Error("Failed to add video to playlist");
+  throw new Error(
+    "Failed to add video to playlist"
+  );
 }
