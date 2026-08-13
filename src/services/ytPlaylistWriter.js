@@ -125,6 +125,7 @@ async function waitForNewPlaylist(
 
       return new Set(response.items || []);
     } catch (error) {
+      console.error("Error in waitforplaylist", error)
       const isPropagationError =
         error?.status === 404 &&
         error?.reason === "playlistNotFound";

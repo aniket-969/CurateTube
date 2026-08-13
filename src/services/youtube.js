@@ -181,7 +181,7 @@ export async function getPlaylistItemsForWriter(
     const error = new Error(
       data?.error?.message || "Failed to fetch playlist items for writer"
     );
-
+console.error("getPlaylistItemsForWriter ERROR:", error);
     error.status = response.status;
     error.reason = data?.error?.errors?.[0]?.reason;
 
