@@ -89,6 +89,7 @@ export async function getPlaylistItems(
   };
 }
 
+// Fetches all the existing playlist of user
 export async function getPlaylistsForWriter(accessToken, pageToken = "") {
   const params = new URLSearchParams({
     part: "snippet,contentDetails",
@@ -177,11 +178,14 @@ export async function getPlaylistItemsForWriter(
   const data = await response.json();
 
   if (!response.ok) {
-    console.error("[YouTube] getPlaylistItemsForWriter FAILED:", data);
-
-    throw new Error(
+    const error = new Error(
       data?.error?.message || "Failed to fetch playlist items for writer"
     );
+
+    error.status = response.status;
+    error.reason = data?.error?.errors?.[0]?.reason;
+
+    throw error;
   }
 
   const items = (data.items || [])
@@ -217,7 +221,7 @@ export async function createPlaylist(
       privacyStatus,
     },
   };
-console.log("creating playlist",title)
+  console.log("creating playlist", title);
   let response;
 
   try {
@@ -250,11 +254,7 @@ console.log("creating playlist",title)
   return data;
 }
 
-export async function addVideoToPlaylist(
-  accessToken,
-  playlistId,
-  videoId
-) {
+export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
   const requestBody = {
     snippet: {
       playlistId,
@@ -266,46 +266,37 @@ export async function addVideoToPlaylist(
   };
 
   const maxAttempts = 5;
-console.log("Trying videoId",videoId,playlistId)
+  console.log("Trying videoId", videoId, playlistId);
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     let response;
 
     try {
-      response = await fetch(
-        `${API}/playlistItems?part=snippet`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      response = await fetch(`${API}/playlistItems?part=snippet`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
     } catch (error) {
-      console.error(
-        "[YouTube] addVideoToPlaylist NETWORK ERROR:",
-        {
-          videoId,
-          attempt,
-          error,
-        }
-      );
+      console.error("[YouTube] addVideoToPlaylist NETWORK ERROR:", {
+        videoId,
+        attempt,
+        error,
+      });
 
       if (attempt === maxAttempts) {
         throw error;
       }
 
-      const delay =
-        1000 * 2 ** (attempt - 1);
+      const delay = 1000 * 2 ** (attempt - 1);
 
       console.log(
         `[YouTube] Network error. Retrying ${videoId} in ${delay}ms...`
       );
 
-      await new Promise((resolve) =>
-        setTimeout(resolve, delay)
-      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
 
       continue;
     }
@@ -314,15 +305,12 @@ console.log("Trying videoId",videoId,playlistId)
 
     // SUCCESS
     if (response.ok) {
-      console.log(
-        "[YouTube] addVideoToPlaylist SUCCESS:",
-        {
-          playlistId,
-          videoId,
-          playlistItemId: data.id,
-          attempt,
-        }
-      );
+      console.log("[YouTube] addVideoToPlaylist SUCCESS:", {
+        playlistId,
+        videoId,
+        playlistItemId: data.id,
+        attempt,
+      });
 
       return data;
     }
@@ -331,40 +319,31 @@ console.log("Trying videoId",videoId,playlistId)
     // ERROR DETAILS
     // --------------------------------------------
 
-    const reason =
-      data?.error?.errors?.[0]?.reason;
+    const reason = data?.error?.errors?.[0]?.reason;
 
     const isPlaylistPropagationError =
-      response.status === 404 &&
-      reason === "playlistNotFound";
+      response.status === 404 && reason === "playlistNotFound";
 
     const isServiceUnavailable =
-      response.status === 409 &&
-      reason === "SERVICE_UNAVAILABLE";
+      response.status === 409 && reason === "SERVICE_UNAVAILABLE";
 
-    const isRetryable =
-      isPlaylistPropagationError ||
-      isServiceUnavailable;
+    const isRetryable = isPlaylistPropagationError || isServiceUnavailable;
 
-    console.error(
-      "[YouTube] addVideoToPlaylist FAILED:",
-      {
-        playlistId,
-        videoId,
-        status: response.status,
-        statusText: response.statusText,
-        reason,
-        error: data?.error,
-        attempt,
-        retryable: isRetryable,
-      }
-    );
+    console.error("[YouTube] addVideoToPlaylist FAILED:", {
+      playlistId,
+      videoId,
+      status: response.status,
+      statusText: response.statusText,
+      reason,
+      error: data?.error,
+      attempt,
+      retryable: isRetryable,
+    });
 
     // PERMANENT ERROR
     if (!isRetryable || attempt === maxAttempts) {
       const error = new Error(
-        data?.error?.message ||
-          "Failed to add video to playlist"
+        data?.error?.message || "Failed to add video to playlist"
       );
 
       error.status = response.status;
@@ -376,8 +355,7 @@ console.log("Trying videoId",videoId,playlistId)
 
     // RETRY
 
-    const delay =
-      1000 * 2 ** (attempt - 1);
+    const delay = 1000 * 2 ** (attempt - 1);
 
     console.log(
       `[YouTube] Retrying ${videoId} in ${delay}ms ` +
@@ -385,12 +363,8 @@ console.log("Trying videoId",videoId,playlistId)
         `attempt ${attempt + 1}/${maxAttempts})`
     );
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, delay)
-    );
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
-  throw new Error(
-    "Failed to add video to playlist"
-  );
+  throw new Error("Failed to add video to playlist");
 }
