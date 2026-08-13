@@ -20,3 +20,13 @@ export function createPlaylistKey(values) {
     .map(([key, value]) => `${key}=${String(value).trim()}`)
     .join("|");
 }
+
+const YTWL_PREFIX = "YTWL:v1:";
+
+export function extractYTWLId(description = "") {
+  const line = description
+    .split("\n")
+    .find((line) => line.startsWith(YTWL_PREFIX));
+
+  return line || null;
+}

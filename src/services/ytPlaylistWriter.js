@@ -1,10 +1,10 @@
 import {
-  getPlaylistsForWriter,
+  getAllPlaylistsForWriter,
   getPlaylistItemsForWriter,
   createPlaylist,
   addVideoToPlaylist,
 } from "./youtube";
-import { createPlaylistKey } from "../utils/createPlaylistCandidate";
+import { createPlaylistKey, extractYTWLid } from "../utils/createPlaylistCandidate";
 
 const YTWL_PREFIX = "YTWL:v1:";
 
@@ -24,39 +24,32 @@ function createPlaylistDescription(ytwlId) {
 }
 
 async function findGeneratedPlaylist(accessToken, ytwlId) {
-  console.log("[YTWL] Searching for existing playlist:", ytwlId);
+  console.log(
+    "[YTWL] Looking up generated playlist:",
+    ytwlId
+  );
 
-  let pageToken = "";
-  let page = 1;
+  const cache =
+    await getAllPlaylistsForWriter(accessToken);
 
-  while (true) {
-    console.log(`[YTWL] Fetching playlists page ${page}...`);
+  const found =
+    cache.generatedByYtwlId.get(ytwlId);
 
-    const response = await getPlaylistsForWriter(accessToken, pageToken);
-
-    console.log(`[YTWL] Playlists page ${page} response:`, response);
-
-    const playlists = response.playlists || [];
-
-    console.log(`[YTWL] Found ${playlists.length} playlists on page ${page}`);
-
-    const found = playlists.find((playlist) =>
-      playlist.description?.includes(ytwlId)
+  if (found) {
+    console.log(
+      "[YTWL] Existing generated playlist found:",
+      found
     );
 
-    if (found) {
-      console.log("[YTWL] Existing generated playlist found:", found);
-      return found;
-    }
-
-    if (!response.nextPageToken) {
-      console.log("[YTWL] No more playlist pages. Playlist not found.");
-      return null;
-    }
-
-    pageToken = response.nextPageToken;
-    page++;
+    return found;
   }
+
+  console.log(
+    "[YTWL] Generated playlist not found:",
+    ytwlId
+  );
+
+  return null;
 }
 
 async function getExistingVideoIds(accessToken, playlistId) {

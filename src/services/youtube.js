@@ -1,3 +1,11 @@
+
+import { 
+  getPlaylistCache,
+  setPlaylistCache,
+  getPlaylistCachePromise,
+  setPlaylistCachePromise,
+} from "./../cache/ytPlaylist";
+
 const API = "https://www.googleapis.com/youtube/v3";
 
 export async function getPlaylists(accessToken, pageToken = "") {
@@ -142,6 +150,97 @@ export async function getPlaylistsForWriter(accessToken, pageToken = "") {
   });
 
   return result;
+}
+
+export async function getAllPlaylistsForWriter(accessToken) {
+  const existingCache = getPlaylistCache();
+
+  if (existingCache) {
+    console.log("[YTWL] Using cached YouTube playlists.");
+
+    return existingCache;
+  }
+
+  const existingPromise = getPlaylistCachePromise();
+
+  if (existingPromise) {
+    console.log(
+      "[YTWL] Playlist cache is currently being built. Waiting for existing request..."
+    );
+
+    return existingPromise;
+  }
+
+  const promise = (async () => {
+    console.log("[YTWL] Building complete YouTube playlist cache...");
+
+    const allById = new Map();
+    const generatedByYtwlId = new Map();
+
+    let pageToken = "";
+    let page = 1;
+
+    while (true) {
+      console.log(
+        `[YTWL] Fetching all playlists page ${page}...`
+      );
+
+      const response = await getPlaylistsForWriter(
+        accessToken,
+        pageToken
+      );
+
+      const playlists = response.playlists || [];
+
+      console.log(
+        `[YTWL] Playlist cache page ${page}: ${playlists.length} playlists`
+      );
+
+      for (const playlist of playlists) {
+        allById.set(playlist.id, playlist);
+
+        const ytwlId = extractYTWLId(
+          playlist.description
+        );
+
+        if (ytwlId) {
+          generatedByYtwlId.set(
+            ytwlId,
+            playlist
+          );
+        }
+      }
+
+      if (!response.nextPageToken) {
+        break;
+      }
+
+      pageToken = response.nextPageToken;
+      page++;
+    }
+
+    const cache = {
+      allById,
+      generatedByYtwlId,
+    };
+
+    setPlaylistCache(cache);
+
+    console.log("[YTWL] Complete playlist cache built:", {
+      totalPlaylists: allById.size,
+      generatedPlaylists: generatedByYtwlId.size,
+    });
+
+    return cache;
+  })();
+
+  setPlaylistCachePromise(promise);
+
+  try {
+    return await promise;
+  } finally {
+    setPlaylistCachePromise(null);
+  }
 }
 
 export async function getPlaylistItemsForWriter(
