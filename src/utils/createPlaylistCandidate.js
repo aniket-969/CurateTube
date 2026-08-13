@@ -1,3 +1,5 @@
+const YTWL_PREFIX = "YTWL:v1:";
+
 export function createPlaylistCandidate(name, type, videos, meta = {}) {
   return {
     name,
@@ -20,8 +22,6 @@ export function createPlaylistKey(values) {
     .map(([key, value]) => `${key}=${String(value).trim()}`)
     .join("|");
 }
-
-const YTWL_PREFIX = "YTWL:v1:";
 
 export function extractYTWLId(description = "") {
   const line = description

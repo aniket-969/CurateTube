@@ -5,6 +5,7 @@ import {
   getPlaylistCachePromise,
   setPlaylistCachePromise,
 } from "./../cache/ytPlaylist";
+import {  extractYTWLId } from "../utils/createPlaylistCandidate.js";
 
 const API = "https://www.googleapis.com/youtube/v3";
 
