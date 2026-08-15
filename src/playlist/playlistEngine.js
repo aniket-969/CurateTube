@@ -66,40 +66,52 @@ export function playlistEngine(videos, config) {
   const playlists = [];
 
   // Group by dominant field
-  const dominantGroups = filterThreshold(
-    groupBy(videos, config.dominant),
-    config.threshold
-  );
+  const rawGroups = groupBy(videos, config.dominant);
+
+  console.log("[PLAYLIST ENGINE] dominant:", config.dominant);
+
+  console.log("[PLAYLIST ENGINE] raw groups:", rawGroups);
+
+  const dominantGroups = filterThreshold(rawGroups, config.threshold);
+
+  console.log("[PLAYLIST ENGINE] filtered groups:", dominantGroups);
 
   for (const [dominantValue, bucket] of Object.entries(dominantGroups)) {
-    const strategy =
+    const configuredStrategy =
       config.strategies?.[dominantValue] ?? config.defaultStrategy;
 
-    // Unknown/fixed-tag genres are simply ignored
-    if (!strategy) continue;
+    // Unknown/fixed-tag dominant values are ignored
+    if (!configuredStrategy) continue;
 
-    // Create parent playlist if required
-    if (strategy.createParent) {
-      playlists.push(
-        createPlaylistCandidate(dominantValue, config.dominant, bucket, {
-          dominantValue,
-          levelIndex: -1,
-          values: {
-            [config.dominant]: dominantValue,
-          },
-        })
-      );
+    // Normalize single strategy or multiple strategies
+    const strategies = Array.isArray(configuredStrategy)
+      ? configuredStrategy
+      : [configuredStrategy];
+
+    for (const strategy of strategies) {
+      // Create parent playlist if required
+      if (strategy.createParent) {
+        playlists.push(
+          createPlaylistCandidate(dominantValue, config.dominant, bucket, {
+            dominantValue,
+            levelIndex: -1,
+            values: {
+              [config.dominant]: dominantValue,
+            },
+          })
+        );
+      }
+
+      processLevels({
+        playlists,
+        videos: bucket,
+        dominantValue,
+        strategy,
+        dominant: config.dominant,
+        levelIndex: 0,
+        values: {},
+      });
     }
-
-    processLevels({
-      playlists,
-      videos: bucket,
-      dominantValue,
-      strategy,
-      dominant: config.dominant,
-      levelIndex: 0,
-      values: {},
-    });
   }
 
   return playlists;

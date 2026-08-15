@@ -109,11 +109,15 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
         classifiedVideos,
         STRATEGIES.artist
       );
+      const eraPlaylists = playlistEngine(
+        classifiedVideos,
+        STRATEGIES.era
+      );
 
-      const generatedPlaylists = [...genrePlaylists, ...artistPlaylists];
+      const generatedPlaylists = [...genrePlaylists, ...artistPlaylists,...eraPlaylists];
 
       console.log("Generated playlists:", generatedPlaylists);
-console.log("artist playlist",artistPlaylists)
+console.log("era playlist",eraPlaylists)
       // Remove invalid candidates.
       const validatedPlaylists = validatePlaylists(generatedPlaylists);
 
