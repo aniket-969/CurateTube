@@ -6,7 +6,7 @@ export const THRESHOLDS = {
 
   LANGUAGE: 5,
 
-  ARTIST: 8,
+  ARTIST: 7,
 
   ERA: 10,
 };

@@ -38,10 +38,7 @@ function processLevels({
     // Generate playlist for this level
     playlists.push(
       createPlaylistCandidate(
-        buildPlaylistName(
-          currentLevel.nameOrder,
-          nextValues
-        ),
+        buildPlaylistName(currentLevel.nameOrder, nextValues),
         dominant,
         bucket,
         {
@@ -75,7 +72,8 @@ export function playlistEngine(videos, config) {
   );
 
   for (const [dominantValue, bucket] of Object.entries(dominantGroups)) {
-    const strategy = config.strategies[dominantValue];
+    const strategy =
+      config.strategies?.[dominantValue] ?? config.defaultStrategy;
 
     // Unknown/fixed-tag genres are simply ignored
     if (!strategy) continue;
@@ -83,18 +81,13 @@ export function playlistEngine(videos, config) {
     // Create parent playlist if required
     if (strategy.createParent) {
       playlists.push(
-        createPlaylistCandidate(
+        createPlaylistCandidate(dominantValue, config.dominant, bucket, {
           dominantValue,
-          config.dominant,
-          bucket,
-          {
-            dominantValue,
-            levelIndex: -1,
-            values: {
-              [config.dominant]: dominantValue,
-            },
-          }
-        )
+          levelIndex: -1,
+          values: {
+            [config.dominant]: dominantValue,
+          },
+        })
       );
     }
 
