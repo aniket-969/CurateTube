@@ -31,7 +31,7 @@ const ERA_STRATEGIES = {
 
   threshold: THRESHOLDS.ERA,
 
-  defaultStrategies: [
+  defaultStrategy: [
     eraThenLanguage,
     eraThenMood,
   ],
