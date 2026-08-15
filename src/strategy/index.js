@@ -1,3 +1,4 @@
 import genre from "./genre.js"
+import artist from "./artist.js"
 
-export default {genre}
+export default {genre,artist}

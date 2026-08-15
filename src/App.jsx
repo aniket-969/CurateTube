@@ -35,7 +35,8 @@ function App() {
     console.log("Creating YouTube playlists:", selectedPlaylists);
 
     const results = [];
-
+console.log("Final created playlists",selectedPlaylists)
+return
     for (const playlist of selectedPlaylists) {
       try {
         const result = await syncGeneratedPlaylist(user.accessToken, playlist);

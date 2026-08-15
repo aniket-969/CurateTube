@@ -4,7 +4,7 @@ const artistThenMood = {
     {
       key: "mood",
       threshold: THRESHOLDS.MOOD,
-      nameOrder: ["artist", "mood"],
+      nameOrder: ["artists", "mood"],
     },
   ],
 
@@ -13,7 +13,7 @@ const artistThenMood = {
 };
 
 const ARTIST_STRATEGIES = {
-  dominant: "artist",
+  dominant: "artists",
 
   threshold: THRESHOLDS.ARTIST,
 
