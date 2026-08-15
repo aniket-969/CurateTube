@@ -1,10 +1,10 @@
 export const THRESHOLDS = {
-  GENRE: 5,
+  GENRE: 6,
   SUBGENRE: 8,
 
-  MOOD: 5,
+  MOOD: 6,
 
-  LANGUAGE: 5,
+  LANGUAGE: 6,
 
   ARTIST: 7,
 
