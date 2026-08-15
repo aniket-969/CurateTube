@@ -1,25 +1,32 @@
-
-import { 
+import {
   getPlaylistCache,
   setPlaylistCache,
   getPlaylistCachePromise,
   setPlaylistCachePromise,
 } from "./../cache/ytPlaylist";
-import {  extractYTWLId } from "../utils/createPlaylistCandidate.js";
+import { extractYTWLId } from "../utils/createPlaylistCandidate.js";
 
 const API = "https://www.googleapis.com/youtube/v3";
 
 export async function getPlaylists(accessToken, pageToken = "") {
+  console.log(accessToken,pageToken);
   const params = new URLSearchParams({
     part: "snippet,contentDetails",
     mine: "true",
     maxResults: "50",
   });
-
+  console.log("Crossed ap")
   if (pageToken) {
     params.set("pageToken", pageToken);
   }
+  console.log('crossed pt')
+  const tokenInfoResponse = await fetch(
+    `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`
+  );
 
+  const tokenInfo = await tokenInfoResponse.json();
+
+  console.log("TOKEN INFO:", tokenInfo, accessToken);
   const response = await fetch(`${API}/playlists?${params}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -182,14 +189,9 @@ export async function getAllPlaylistsForWriter(accessToken) {
     let page = 1;
 
     while (true) {
-      console.log(
-        `[YTWL] Fetching all playlists page ${page}...`
-      );
+      console.log(`[YTWL] Fetching all playlists page ${page}...`);
 
-      const response = await getPlaylistsForWriter(
-        accessToken,
-        pageToken
-      );
+      const response = await getPlaylistsForWriter(accessToken, pageToken);
 
       const playlists = response.playlists || [];
 
@@ -200,15 +202,10 @@ export async function getAllPlaylistsForWriter(accessToken) {
       for (const playlist of playlists) {
         allById.set(playlist.id, playlist);
 
-        const ytwlId = extractYTWLId(
-          playlist.description
-        );
+        const ytwlId = extractYTWLId(playlist.description);
 
         if (ytwlId) {
-          generatedByYtwlId.set(
-            ytwlId,
-            playlist
-          );
+          generatedByYtwlId.set(ytwlId, playlist);
         }
       }
 
@@ -281,7 +278,7 @@ export async function getPlaylistItemsForWriter(
     const error = new Error(
       data?.error?.message || "Failed to fetch playlist items for writer"
     );
-console.error("getPlaylistItemsForWriter ERROR:", error);
+    console.error("getPlaylistItemsForWriter ERROR:", error);
     error.status = response.status;
     error.reason = data?.error?.errors?.[0]?.reason;
 

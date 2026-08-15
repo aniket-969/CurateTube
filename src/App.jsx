@@ -62,7 +62,7 @@ function App() {
   }
 
   if (!user) {
-    return <LoginScreen />;
+    return <LoginScreen setUser={setUser} />;
   }
 
   if (screen === "generated") {

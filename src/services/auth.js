@@ -36,6 +36,13 @@ export async function login() {
   const params = new URLSearchParams(hash);
 
   const accessToken = params.get("access_token");
+  const tokenInfoResponse = await fetch(
+    `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`
+  );
+
+  const tokenInfo = await tokenInfoResponse.json();
+
+  console.log("TOKEN INFO:", tokenInfo,accessToken);
 
   if (!accessToken) {
     throw new Error("Access token not found.");
