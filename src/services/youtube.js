@@ -465,3 +465,44 @@ export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
 
   throw new Error("Failed to add video to playlist");
 }
+
+export async function updatePlaylistTitle(
+  accessToken,
+  playlist,
+  title
+) {
+  const requestBody = {
+    id: playlist.id,
+    snippet: {
+      title,
+      description: playlist.description ?? "",
+    },
+  };
+
+  const response = await fetch(
+    `${API}/playlists?part=snippet`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error?.message ||
+        "Failed to rename YouTube playlist"
+    );
+  }
+
+  return {
+    id: data.id,
+    title: data.snippet.title,
+    description: data.snippet.description ?? "",
+  };
+}
