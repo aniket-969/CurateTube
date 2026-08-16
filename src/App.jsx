@@ -35,8 +35,8 @@ function App() {
     // console.log("Creating YouTube playlists:", selectedPlaylists);
 
     const results = [];
-console.log("Final created playlists",selectedPlaylists)
-return
+    console.log("Final created playlists", selectedPlaylists);
+    return;
     for (const playlist of selectedPlaylists) {
       try {
         const result = await syncGeneratedPlaylist(user.accessToken, playlist);
@@ -59,11 +59,21 @@ return
   }
 
   if (user === undefined) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-[400px] h-[560px] overflow-hidden bg-white">
+        <div className="flex h-full items-center justify-center">
+          Loading...
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
-    return <LoginScreen setUser={setUser} />;
+    return (
+      <div className="w-[400px] h-[560px] overflow-hidden bg-white">
+        <LoginScreen setUser={setUser} />
+      </div>
+    );
   }
 
   if (screen === "generated") {
