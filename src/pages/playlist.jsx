@@ -109,20 +109,19 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
         classifiedVideos,
         STRATEGIES.artist
       );
-      const eraPlaylists = playlistEngine(
-        classifiedVideos,
-        STRATEGIES.era
-      );
+      const eraPlaylists = playlistEngine(classifiedVideos, STRATEGIES.era);
 
-      const moodPlaylists = playlistEngine(
-        classifiedVideos,
-        STRATEGIES.mood
-      );
+      const moodPlaylists = playlistEngine(classifiedVideos, STRATEGIES.mood);
 
-      const generatedPlaylists = [...genrePlaylists, ...artistPlaylists,...eraPlaylists,...moodPlaylists];
+      const generatedPlaylists = [
+        ...genrePlaylists,
+        ...artistPlaylists,
+        ...eraPlaylists,
+        ...moodPlaylists,
+      ];
 
       console.log("Generated playlists:", generatedPlaylists);
-console.log("mood playlist",moodPlaylists)
+
       // Remove invalid candidates.
       const validatedPlaylists = validatePlaylists(generatedPlaylists);
 
@@ -132,7 +131,10 @@ console.log("mood playlist",moodPlaylists)
       // selected by default in the UI.
       const recommendedPlaylists = recommendPlaylists(validatedPlaylists);
 
-      console.log("RECOMMENDED:", recommendedPlaylists);
+      console.log(
+        "RECOMMENDED:",
+        recommendedPlaylists.filter((playlist) => playlist.recommended === true)
+      );
 
       // Hand the final result to App.
       onGenerated(recommendedPlaylists);
