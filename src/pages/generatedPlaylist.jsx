@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { Check, Pencil } from "lucide-react";
 
 function GeneratedPlaylists({ playlists = [], onGenerate }) {
   const [selected, setSelected] = useState({});
   const [names, setNames] = useState({});
+  const [editingIndex, setEditingIndex] = useState(null);
 
   // Select only recommended playlists by default
   useEffect(() => {
@@ -53,9 +55,7 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
     // Sort each group by number of songs, largest first
     Object.values(groups).forEach((group) => {
       group.sort(
-        (a, b) =>
-          (b.videoIds?.length ?? 0) -
-          (a.videoIds?.length ?? 0)
+        (a, b) => (b.videoIds?.length ?? 0) - (a.videoIds?.length ?? 0)
       );
     });
 
@@ -79,88 +79,168 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
 
   if (!playlists.length) {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-gray-500">
+      <div className="flex h-full items-center justify-center text-sm text-zinc-500">
         No playlists were generated.
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-[#0f0f0f] text-white">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-lg font-semibold">
+      <header className="border-b border-zinc-800/80 px-4 py-4">
+        <h1 className="text-base font-semibold text-white">
           Generated Playlists
         </h1>
 
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-xs leading-5 text-zinc-500">
           Select the playlists you want to create.
         </p>
-      </div>
+      </header>
 
       {/* Playlist list */}
-      <div className="flex-1 overflow-y-auto space-y-5">
-        {Object.entries(groupedPlaylists).map(
-          ([type, typePlaylists]) => (
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+        <div className="space-y-5">
+          {Object.entries(groupedPlaylists).map(([type, typePlaylists]) => (
             <section key={type}>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                {type}
-              </h2>
+              {/* Section title */}
+              <div className="mb-2 flex items-center gap-2 px-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+                  {type}
+                </span>
+
+                <div className="h-px flex-1 bg-zinc-800/70" />
+              </div>
 
               <div className="space-y-2">
                 {typePlaylists.map((playlist) => {
                   const { index } = playlist;
                   const isSelected = !!selected[index];
+                  const currentName = names[index] ?? playlist.name;
 
                   return (
                     <div
                       key={index}
-                      className="rounded-lg border px-3 py-2.5"
+                      className={`
+                        group
+                        rounded-xl
+                        border
+                        px-3.5 py-3
+                        transition
+                        ${
+                          isSelected
+                            ? "border-zinc-700 bg-zinc-900"
+                            : "border-zinc-800 bg-zinc-900/40"
+                        }
+                      `}
                     >
                       <div className="flex items-center gap-3">
                         {/* Checkbox */}
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() =>
-                            togglePlaylist(index)
-                          }
-                          className="h-4 w-4 shrink-0"
+                          onChange={() => togglePlaylist(index)}
+                          className="
+                            h-4 w-4
+                            shrink-0
+                            cursor-pointer
+                            accent-red-600
+                          "
                         />
 
-                        {/* Playlist name */}
-                        <input
-                          type="text"
-                          value={
-                            names[index] ?? playlist.name
-                          }
-                          onChange={(e) =>
-                            handleNameChange(
-                              index,
-                              e.target.value
-                            )
-                          }
-                          className="min-w-0 flex-1 bg-transparent text-sm font-medium outline-none"
-                        />
+                        {/* Name / Edit */}
+                        <div className="min-w-0 flex-1">
+                          {editingIndex === index ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                autoFocus
+                                type="text"
+                                value={currentName}
+                                onChange={(e) =>
+                                  handleNameChange(index, e.target.value)
+                                }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    setEditingIndex(null);
+                                  }
+                                }}
+                                className="
+                                  min-w-0 flex-1
+                                  rounded-md
+                                  border border-zinc-700
+                                  bg-zinc-950
+                                  px-2 py-1
+                                  text-sm font-medium text-white
+                                  outline-none
+                                  focus:border-zinc-500
+                                "
+                              />
 
-                        {/* Song count */}
-                        <span className="shrink-0 text-xs text-gray-500">
-                          {playlist.videoIds?.length ?? 0} songs
-                        </span>
+                              <button
+                                type="button"
+                                onClick={() => setEditingIndex(null)}
+                                className="
+                                  flex h-7 w-7 shrink-0
+                                  items-center justify-center
+                                  rounded-md
+                                  text-zinc-500
+                                  transition
+                                  hover:bg-zinc-800
+                                  hover:text-white
+                                "
+                                title="Save name"
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="min-w-0 truncate text-sm font-semibold text-zinc-100">
+                                {currentName}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() => setEditingIndex(index)}
+                                className="
+                                  flex h-6 w-6
+                                  shrink-0
+                                  items-center justify-center
+                                  rounded-md
+                                  text-zinc-600
+                                  opacity-0
+                                  transition
+                                  hover:bg-zinc-800
+                                  hover:text-zinc-300
+                                  group-hover:opacity-100
+                                "
+                                title="Edit playlist name"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Song count */}
+                          <p className="mt-1 text-xs text-zinc-500">
+                            {playlist.videoIds?.length ?? 0}{" "}
+                            {playlist.videoIds?.length === 1 ? "song" : "songs"}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
             </section>
-          )
-        )}
+          ))}
+        </div>
       </div>
 
       {/* Bottom action */}
-      <div className="mt-4 border-t pt-3">
+      <footer className="border-t border-zinc-800/80 px-4 py-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-zinc-500">
             {selectedCount} playlist
             {selectedCount === 1 ? "" : "s"} selected
           </span>
@@ -168,12 +248,23 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
           <button
             onClick={handleGenerate}
             disabled={selectedCount === 0}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="
+            rounded-lg
+            bg-white
+            px-4 py-2
+            text-sm font-semibold
+            text-zinc-900
+            transition
+            hover:bg-zinc-200
+            active:scale-[0.98]
+            disabled:cursor-not-allowed
+            disabled:opacity-30
+          "
           >
             Generate
           </button>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
