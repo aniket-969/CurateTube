@@ -10,7 +10,6 @@ export async function classifySongs(apiKey, songs) {
       dangerouslyAllowBrowser: true,
     });
 
-    console.time("API");
 
     const response = await client.chat.completions.create({
       model: "deepseek-v4-flash",
@@ -30,8 +29,6 @@ export async function classifySongs(apiKey, songs) {
         },
       ],
     });
-
-    // console.timeEnd("API");
 
     // console.log(response.usage);
 

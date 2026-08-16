@@ -32,7 +32,7 @@ function App() {
   }
 
   async function handleGenerate(selectedPlaylists) {
-    console.log("Creating YouTube playlists:", selectedPlaylists);
+    // console.log("Creating YouTube playlists:", selectedPlaylists);
 
     const results = [];
 console.log("Final created playlists",selectedPlaylists)

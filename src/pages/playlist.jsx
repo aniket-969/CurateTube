@@ -95,7 +95,7 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
       // Wait for every LLM batch to finish.
       const results = await Promise.all(classificationJobs);
 
-      console.log("All videos classified:", results);
+      // console.log("All videos classified:", results);
 
       // Combine all classified batches.
       const classifiedVideos = results.flat();

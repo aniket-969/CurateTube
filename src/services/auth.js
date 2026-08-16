@@ -104,7 +104,7 @@ export async function logout() {
 }
 
 export async function validateStoredUser() {
-  console.log("[Auth] Starting stored user validation...");
+  // console.log("[Auth] Starting stored user validation...");
 
   const user = await getStoredUser();
 
@@ -113,11 +113,11 @@ export async function validateStoredUser() {
     return null;
   }
 
-  console.log("[Auth] Stored user found:", {
-    email: user.profile?.email,
-    name: user.profile?.name,
-    hasAccessToken: !!user.accessToken,
-  });
+  // console.log("[Auth] Stored user found:", {
+  //   email: user.profile?.email,
+  //   name: user.profile?.name,
+  //   hasAccessToken: !!user.accessToken,
+  // });
 
   try {
    
@@ -130,7 +130,7 @@ export async function validateStoredUser() {
       }
     );
 
-    console.log("[Auth] Userinfo response:", response.status, response.statusText);
+    // console.log("[Auth] Userinfo response:", response.status, response.statusText);
 
     if (!response.ok) {
       console.log("[Auth] Access token is invalid/expired. Logging out.");
@@ -142,11 +142,11 @@ export async function validateStoredUser() {
       `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${user.accessToken}`
     );
 
-    console.log(
-      "[Auth] Token info response:",
-      tokenInfoResponse.status,
-      tokenInfoResponse.statusText
-    );
+    // console.log(
+    //   "[Auth] Token info response:",
+    //   tokenInfoResponse.status,
+    //   tokenInfoResponse.statusText
+    // );
 
     if (!tokenInfoResponse.ok) {
       console.log("[Auth] Failed to retrieve token information. Logging out.");
@@ -156,11 +156,11 @@ export async function validateStoredUser() {
 
     const tokenInfo = await tokenInfoResponse.json();
 
-    console.log("[Auth] Token info:", {
-      scope: tokenInfo.scope,
-      expiresIn: tokenInfo.expires_in,
-      email: tokenInfo.email,
-    });
+    // console.log("[Auth] Token info:", {
+    //   scope: tokenInfo.scope,
+    //   expiresIn: tokenInfo.expires_in,
+    //   email: tokenInfo.email,
+    // });
 
     const grantedScopes = tokenInfo.scope?.split(" ") ?? [];
 

@@ -9,17 +9,17 @@ import { extractYTWLId } from "../utils/createPlaylistCandidate.js";
 const API = "https://www.googleapis.com/youtube/v3";
 
 export async function getPlaylists(accessToken, pageToken = "") {
-  console.log(accessToken,pageToken);
+
   const params = new URLSearchParams({
     part: "snippet,contentDetails",
     mine: "true",
     maxResults: "50",
   });
-  console.log("Crossed ap")
+  
   if (pageToken) {
     params.set("pageToken", pageToken);
   }
-  console.log('crossed pt')
+  
   const tokenInfoResponse = await fetch(
     `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`
   );
