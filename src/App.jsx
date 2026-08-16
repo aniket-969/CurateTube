@@ -4,18 +4,24 @@ import PlaylistScreen from "./pages/Playlist";
 import GeneratedPlaylists from "./pages/generatedPlaylist";
 import { validateStoredUser } from "./services/auth";
 import { syncGeneratedPlaylist } from "./services/ytPlaylistWriter";
+import { DEV_USER,initialPlaylist } from "./utils/data";
+
+const DEV_MODE = true;
 
 function App() {
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(DEV_MODE ? DEV_USER : undefined);
 
   const [screen, setScreen] = useState("playlists");
 
   const [generatedPlaylists, setGeneratedPlaylists] = useState([]);
 
   useEffect(() => {
+    if (DEV_MODE) {
+      return;
+    }
+
     async function init() {
       const storedUser = await validateStoredUser();
-
       setUser(storedUser);
     }
 

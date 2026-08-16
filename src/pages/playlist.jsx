@@ -6,9 +6,11 @@ import { playlistEngine } from "../playlist/playlistEngine.js";
 import STRATEGIES from "../strategy/index.js";
 import validatePlaylists from "../utils/validatePlaylist";
 import recommendPlaylists from "../playlist/playlistRecommender.js";
+import { initialPlaylist } from "../utils/data";
 
+const DEV_MODE = true;
 function PlaylistScreen({ user, setUser, onGenerated }) {
-  const [playlists, setPlaylists] = useState([]);
+  const [playlists, setPlaylists] = useState(DEV_MODE ? initialPlaylist : []);
   const [nextPageToken, setNextPageToken] = useState(null);
 
   const [search, setSearch] = useState("");
@@ -19,13 +21,21 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
+    console.log("[PLAYLIST SCREEN] mounted");
+    console.log("[PLAYLIST SCREEN] DEV_MODE:", DEV_MODE);
+
+    if (DEV_MODE) {
+      setLoading(false);
+      return;
+    }
+
     loadInitialPlaylists();
   }, []);
 
   async function loadInitialPlaylists() {
     try {
       const data = await getPlaylists(user.accessToken);
-
+      console.log("Initial data", data);
       setPlaylists(data.playlists);
       setNextPageToken(data.nextPageToken);
     } catch (error) {
