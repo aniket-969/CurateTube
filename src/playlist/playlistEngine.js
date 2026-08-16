@@ -48,17 +48,17 @@ function processLevels({
 
     // Generate playlist for this level
     playlists.push(
-createPlaylistCandidate(
-  buildPlaylistName(currentLevel.nameOrder, nextValues),
-  dominant,
-  bucket,
-  {
-    dominant,
-    dominantValue,
-    levelIndex,
-    values: nextValues,
-  }
-);
+      createPlaylistCandidate(
+        buildPlaylistName(currentLevel.nameOrder, nextValues),
+        dominant,
+        bucket,
+        {
+          dominant,
+          dominantValue,
+          levelIndex,
+          values: nextValues,
+        }
+      )
     );
 
     // Continue traversing deeper

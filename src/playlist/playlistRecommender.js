@@ -1,19 +1,33 @@
 const DEFAULT_LIMIT = 10;
-const MAX_PER_FAMILY = 2;
 
-function getFamily(playlist) {
-  return (
-    playlist.meta?.dominantValue ??
-    playlist.meta?.values?.genre ??
-    playlist.meta?.values?.mood ??
-    playlist.meta?.values?.artist ??
-    playlist.meta?.values?.era ??
-    playlist.name
-  );
+const DEFAULT_OPTIONS = {
+  // How strongly we reward a dominant type that has not yet been represented.
+  typeDiversityBonus: 12,
+
+  // How strongly we reward a new family within a type.
+  familyDiversityBonus: 6,
+
+  // How strongly we reward a new branch.
+  branchDiversityBonus: 2,
+};
+
+function getDominantType(playlist) {
+  return playlist.meta?.dominant ?? playlist.type ?? null;
 }
 
-function getLanguage(playlist) {
-  return playlist.meta?.values?.language ?? null;
+function getDominantValue(playlist) {
+  return playlist.meta?.dominantValue ?? null;
+}
+
+function getFamilyKey(playlist) {
+  const dominant = getDominantType(playlist);
+  const dominantValue = getDominantValue(playlist);
+
+  if (!dominant || !dominantValue) {
+    return null;
+  }
+
+  return `${dominant}|${dominantValue}`;
 }
 
 function getBranchKey(playlist) {
@@ -23,8 +37,10 @@ function getBranchKey(playlist) {
     values.language,
     values.subgenre,
     values.mood,
+    values.artists,
     values.artist,
     values.era,
+    values.genre,
   ]
     .filter(Boolean)
     .join("|");
@@ -34,32 +50,27 @@ function getSongCount(playlist) {
   return playlist.videoIds?.length ?? 0;
 }
 
-function scoreCandidate(playlist, state) {
-  const family = getFamily(playlist);
-  const language = getLanguage(playlist);
+function scoreCandidate(playlist, state, options) {
+  const dominant = getDominantType(playlist);
+  const family = getFamilyKey(playlist);
   const branch = getBranchKey(playlist);
 
   let score = getSongCount(playlist);
 
-  // Strong preference for a new dominant family.
-  if (!state.families.has(family)) {
-    score += 1000;
+  // Strongest diversity bonus:
+  // reward a completely new playlist type.
+  if (dominant && !state.types.has(dominant)) {
+    score += options.typeDiversityBonus;
   }
 
-  // Prefer a new language within an already-used family.
-  const familyLanguages = state.languagesByFamily.get(family);
-
-  if (
-    familyLanguages &&
-    language &&
-    !familyLanguages.has(language)
-  ) {
-    score += 300;
+  // Reward a new family within an already-used type.
+  if (family && !state.families.has(family)) {
+    score += options.familyDiversityBonus;
   }
 
-  // Prefer a branch we haven't already selected.
-  if (!state.branches.has(`${family}|${branch}`)) {
-    score += 100;
+  // Small bonus for a new branch.
+  if (branch && !state.branches.has(`${family}|${branch}`)) {
+    score += options.branchDiversityBonus;
   }
 
   return score;
@@ -67,30 +78,29 @@ function scoreCandidate(playlist, state) {
 
 export function recommendPlaylists(
   playlists,
-  limit = DEFAULT_LIMIT
+  limit = DEFAULT_LIMIT,
+  options = {}
 ) {
   if (!Array.isArray(playlists) || playlists.length === 0) {
     return [];
   }
 
-  const candidates = playlists
-    .map((playlist, index) => ({
-      playlist,
-      index,
-    }))
-    .sort(
-      (a, b) =>
-        getSongCount(b.playlist) -
-        getSongCount(a.playlist)
-    );
+  const config = {
+    ...DEFAULT_OPTIONS,
+    ...options,
+  };
+
+  const candidates = playlists.map((playlist, index) => ({
+    playlist,
+    index,
+  }));
 
   const selected = new Set();
 
   const state = {
+    types: new Set(),
     families: new Set(),
     branches: new Set(),
-    languagesByFamily: new Map(),
-    familyCounts: new Map(),
   };
 
   while (
@@ -105,21 +115,10 @@ export function recommendPlaylists(
         continue;
       }
 
-      const playlist = candidate.playlist;
-      const family = getFamily(playlist);
-
-      const familyCount =
-        state.familyCounts.get(family) ?? 0;
-
-      // Never automatically select more than two
-      // playlists from the same dominant family.
-      if (familyCount >= MAX_PER_FAMILY) {
-        continue;
-      }
-
       const score = scoreCandidate(
-        playlist,
-        state
+        candidate.playlist,
+        state,
+        config
       );
 
       if (score > bestScore) {
@@ -133,32 +132,23 @@ export function recommendPlaylists(
     }
 
     const playlist = bestCandidate.playlist;
-    const family = getFamily(playlist);
-    const language = getLanguage(playlist);
+
+    const dominant = getDominantType(playlist);
+    const family = getFamilyKey(playlist);
     const branch = getBranchKey(playlist);
 
     selected.add(bestCandidate.index);
 
-    state.families.add(family);
-
-    state.familyCounts.set(
-      family,
-      (state.familyCounts.get(family) ?? 0) + 1
-    );
-
-    state.branches.add(`${family}|${branch}`);
-
-    if (!state.languagesByFamily.has(family)) {
-      state.languagesByFamily.set(
-        family,
-        new Set()
-      );
+    if (dominant) {
+      state.types.add(dominant);
     }
 
-    if (language) {
-      state.languagesByFamily
-        .get(family)
-        .add(language);
+    if (family) {
+      state.families.add(family);
+    }
+
+    if (branch) {
+      state.branches.add(`${family}|${branch}`);
     }
   }
 
