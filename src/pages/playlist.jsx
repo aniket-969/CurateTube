@@ -142,8 +142,7 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
       const recommendedPlaylists = recommendPlaylists(validatedPlaylists);
 
       console.log(
-        "RECOMMENDED:",
-        recommendedPlaylists.filter((playlist) => playlist.recommended === true)
+        "RECOMMENDED:",recommendedPlaylists
       );
 
       // Hand the final result to App.
@@ -372,7 +371,7 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
 
             <p className="mt-1 text-xs text-zinc-600">
               {nextPageToken
-                ? "Try loading more playlists."
+                ? "click on load more btn below search input."
                 : "Try a different search."}
             </p>
           </div>

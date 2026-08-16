@@ -258,3 +258,355 @@ export const DEV_USER = {
     email: "test@example.com",
   },
 };
+
+export const recommendedPl = [
+    {
+        "name": "Bollywood Sad",
+        "type": "genre",
+        "videoIds": [
+            "LWna8JKjfiQ",
+            "Tc6N_iTjWCs",
+            "cGWKlSu7t88",
+            "J3fZCRM5UeM",
+            "0JnmAghjKYo",
+            "Z-hiZNeF1mI",
+            "NnbPh-5iP8U"
+        ],
+        "meta": {
+            "dominant": "genre",
+            "dominantValue": "Bollywood",
+            "levelIndex": 0,
+            "values": {
+                "genre": "Bollywood",
+                "mood": "Sad"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "Ghazal",
+        "type": "genre",
+        "videoIds": [
+            "Dt5yy3IpOFI",
+            "NNYJiHPA-wk",
+            "0EcEzWyZqvw",
+            "Ju6kNKaBOQ8",
+            "73whgLKwYFE",
+            "veLSFpMS6B0",
+            "In3yneec2hk",
+            "77uqMPi10lU",
+            "AjRAws8ShJ0",
+            "f1R8rokg8Lg",
+            "tB3m9m579ys",
+            "SK49I5xq7e8"
+        ],
+        "meta": {
+            "dominant": "genre",
+            "dominantValue": "Ghazal",
+            "levelIndex": -1,
+            "values": {
+                "genre": "Ghazal"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "Ghazal Romantic",
+        "type": "genre",
+        "videoIds": [
+            "NNYJiHPA-wk",
+            "Ju6kNKaBOQ8",
+            "73whgLKwYFE",
+            "veLSFpMS6B0",
+            "77uqMPi10lU",
+            "AjRAws8ShJ0",
+            "f1R8rokg8Lg",
+            "tB3m9m579ys"
+        ],
+        "meta": {
+            "dominant": "genre",
+            "dominantValue": "Ghazal",
+            "levelIndex": 0,
+            "values": {
+                "genre": "Ghazal",
+                "mood": "Romantic"
+            }
+        },
+        "recommended": false
+    },
+    {
+        "name": "Hindi Hip-Hop / Rap",
+        "type": "genre",
+        "videoIds": [
+            "8D3Eu4B9J-I",
+            "6Zv9mSiZGBU",
+            "vR16Gu-Uq00",
+            "MZuYthwMNtg",
+            "Yo7q7rdRs7U",
+            "qVcHlaFZf6A",
+            "De9VIp37CjY",
+            "N1s-GN1SWqY",
+            "Dqk2LyrtTBU",
+            "Pirzg-F_aag",
+            "1s96TG0xbZg",
+            "b-gjLgT4SUQ",
+            "7yBxLdnIxDs",
+            "N8DDpLCASNs"
+        ],
+        "meta": {
+            "dominant": "genre",
+            "dominantValue": "Hip-Hop / Rap",
+            "levelIndex": 0,
+            "values": {
+                "genre": "Hip-Hop / Rap",
+                "language": "Hindi"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "Hindi Pop",
+        "type": "genre",
+        "videoIds": [
+            "pepihWE7RFU",
+            "EiiOYwqk3A0",
+            "Xi8Fabcb_MA",
+            "cEAAbk0tR2M",
+            "oafxkMv4xnc",
+            "U0EI7XFkkV4",
+            "gJLVTKhTnog"
+        ],
+        "meta": {
+            "dominant": "genre",
+            "dominantValue": "Pop",
+            "levelIndex": 0,
+            "values": {
+                "genre": "Pop",
+                "language": "Hindi"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "Jagjit Singh",
+        "type": "artists",
+        "videoIds": [
+            "NNYJiHPA-wk",
+            "0EcEzWyZqvw",
+            "Ju6kNKaBOQ8",
+            "73whgLKwYFE",
+            "veLSFpMS6B0",
+            "In3yneec2hk",
+            "77uqMPi10lU",
+            "AjRAws8ShJ0",
+            "f1R8rokg8Lg",
+            "tB3m9m579ys",
+            "SK49I5xq7e8"
+        ],
+        "meta": {
+            "dominant": "artists",
+            "dominantValue": "Jagjit Singh",
+            "levelIndex": -1,
+            "values": {
+                "artists": "Jagjit Singh"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "Mukesh",
+        "type": "artists",
+        "videoIds": [
+            "65xVy0ss07U",
+            "Tc6N_iTjWCs",
+            "cGWKlSu7t88",
+            "c8bXTWEeh9Y",
+            "0JnmAghjKYo",
+            "l2SpJDnyTF8",
+            "Z-hiZNeF1mI",
+            "UbuNVu9eV1U",
+            "NnbPh-5iP8U"
+        ],
+        "meta": {
+            "dominant": "artists",
+            "dominantValue": "Mukesh",
+            "levelIndex": -1,
+            "values": {
+                "artists": "Mukesh"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "2020s Hindi",
+        "type": "era",
+        "videoIds": [
+            "8D3Eu4B9J-I",
+            "6Zv9mSiZGBU",
+            "vR16Gu-Uq00",
+            "MZuYthwMNtg",
+            "Yo7q7rdRs7U",
+            "qVcHlaFZf6A",
+            "De9VIp37CjY",
+            "N1s-GN1SWqY",
+            "Dqk2LyrtTBU",
+            "Pirzg-F_aag",
+            "1s96TG0xbZg",
+            "pepihWE7RFU",
+            "7kR6tqaq_zY",
+            "ghe6YipmCQY",
+            "EiiOYwqk3A0",
+            "Xi8Fabcb_MA",
+            "b-gjLgT4SUQ",
+            "7yBxLdnIxDs",
+            "cEAAbk0tR2M",
+            "oafxkMv4xnc",
+            "U0EI7XFkkV4",
+            "gJLVTKhTnog",
+            "N8DDpLCASNs"
+        ],
+        "meta": {
+            "dominant": "era",
+            "dominantValue": "2020s",
+            "levelIndex": 0,
+            "values": {
+                "era": "2020s",
+                "language": "Hindi"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "2020s Hype",
+        "type": "era",
+        "videoIds": [
+            "8D3Eu4B9J-I",
+            "6Zv9mSiZGBU",
+            "vR16Gu-Uq00",
+            "MZuYthwMNtg",
+            "Yo7q7rdRs7U",
+            "qVcHlaFZf6A",
+            "De9VIp37CjY",
+            "N1s-GN1SWqY",
+            "Pirzg-F_aag",
+            "N8DDpLCASNs"
+        ],
+        "meta": {
+            "dominant": "era",
+            "dominantValue": "2020s",
+            "levelIndex": 0,
+            "values": {
+                "era": "2020s",
+                "mood": "Hype"
+            }
+        },
+        "recommended": false
+    },
+    {
+        "name": "Sad",
+        "type": "mood",
+        "videoIds": [
+            "Dt5yy3IpOFI",
+            "LWna8JKjfiQ",
+            "0EcEzWyZqvw",
+            "In3yneec2hk",
+            "Tc6N_iTjWCs",
+            "cGWKlSu7t88",
+            "J3fZCRM5UeM",
+            "0JnmAghjKYo",
+            "Z-hiZNeF1mI",
+            "NnbPh-5iP8U",
+            "EiiOYwqk3A0",
+            "SK49I5xq7e8",
+            "sFMRqxCexDk"
+        ],
+        "meta": {
+            "dominant": "mood",
+            "dominantValue": "Sad",
+            "levelIndex": -1,
+            "values": {
+                "mood": "Sad"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "Romantic",
+        "type": "mood",
+        "videoIds": [
+            "NNYJiHPA-wk",
+            "Ju6kNKaBOQ8",
+            "73whgLKwYFE",
+            "veLSFpMS6B0",
+            "77uqMPi10lU",
+            "AjRAws8ShJ0",
+            "f1R8rokg8Lg",
+            "tB3m9m579ys",
+            "65xVy0ss07U",
+            "l2SpJDnyTF8",
+            "UbuNVu9eV1U",
+            "7kR6tqaq_zY",
+            "CL6VAEI7kyk",
+            "oafxkMv4xnc",
+            "gJLVTKhTnog"
+        ],
+        "meta": {
+            "dominant": "mood",
+            "dominantValue": "Romantic",
+            "levelIndex": -1,
+            "values": {
+                "mood": "Romantic"
+            }
+        },
+        "recommended": true
+    },
+    {
+        "name": "Romantic Hindi",
+        "type": "mood",
+        "videoIds": [
+            "Ju6kNKaBOQ8",
+            "f1R8rokg8Lg",
+            "65xVy0ss07U",
+            "l2SpJDnyTF8",
+            "UbuNVu9eV1U",
+            "7kR6tqaq_zY",
+            "oafxkMv4xnc",
+            "gJLVTKhTnog"
+        ],
+        "meta": {
+            "dominant": "mood",
+            "dominantValue": "Romantic",
+            "levelIndex": 0,
+            "values": {
+                "mood": "Romantic",
+                "language": "Hindi"
+            }
+        },
+        "recommended": false
+    },
+    {
+        "name": "Hype",
+        "type": "mood",
+        "videoIds": [
+            "8D3Eu4B9J-I",
+            "6Zv9mSiZGBU",
+            "vR16Gu-Uq00",
+            "MZuYthwMNtg",
+            "Yo7q7rdRs7U",
+            "qVcHlaFZf6A",
+            "De9VIp37CjY",
+            "N1s-GN1SWqY",
+            "Pirzg-F_aag",
+            "N8DDpLCASNs"
+        ],
+        "meta": {
+            "dominant": "mood",
+            "dominantValue": "Hype",
+            "levelIndex": -1,
+            "values": {
+                "mood": "Hype"
+            }
+        },
+        "recommended": true
+    }
+]
