@@ -1,13 +1,23 @@
+import { useState } from "react";
+import { LoaderCircle } from "lucide-react";
 import { login } from "../services/auth";
 
 function LoginScreen({ setUser }) {
+  const [loading, setLoading] = useState(false);
+
   const handleLogin = async () => {
+    if (loading) return;
+
+    setLoading(true);
+
     try {
       const user = await login();
       setUser(user);
     } catch (error) {
       console.error(error);
       alert("Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -28,8 +38,8 @@ function LoginScreen({ setUser }) {
             </h1>
 
             <p className="max-w-[300px] text-center text-[15px] leading-6 text-zinc-400">
-              Turn one YouTube playlist into separate playlists by genre, mood,
-              era, language, and artist with AI
+              Turn one YouTube playlist into separate playlists by genre,
+              mood, era, language, and artist with AI
             </p>
           </div>
 
@@ -37,15 +47,36 @@ function LoginScreen({ setUser }) {
           <div className="mt-12 flex w-full flex-col items-center gap-4">
             <button
               onClick={handleLogin}
-              className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-white px-4 text-[15px] font-semibold text-gray-900 transition hover:bg-gray-100 active:scale-[0.99] cursor-pointer"
+              disabled={loading}
+              className="
+                flex h-14 w-full items-center justify-center gap-3
+                rounded-2xl bg-white px-4
+                text-[15px] font-semibold text-gray-900
+                transition
+                hover:bg-gray-100
+                active:scale-[0.99]
+                cursor-pointer
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
             >
-              <span className="text-xl font-bold">G</span>
-              <span>Continue with Google</span>
+              {loading ? (
+                <>
+                  <LoaderCircle className="h-5 w-5 animate-spin" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-xl font-bold">G</span>
+                  <span>Continue with Google</span>
+                </>
+              )}
             </button>
 
             <p className="max-w-[270px] text-center text-xs leading-5 text-zinc-500">
-              Connect your YouTube account to access and organize your
-              playlists.
+              {loading
+                ? "Waiting for Google authentication..."
+                : "Connect your YouTube account to access and organize your playlists."}
             </p>
           </div>
         </div>
