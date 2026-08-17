@@ -5,7 +5,7 @@ import {
   addVideoToPlaylist,
   updatePlaylistTitle,
 } from "./youtube";
-import { createPlaylistKey } from "../utils/createPlaylistCandidate.js";
+import { createPlaylistKey } from "../utils/helper.js";
 
 const YTWL_PREFIX = "YTWL:v1:";
 

@@ -4,7 +4,7 @@ import { getPlaylists, getPlaylistItems } from "../services/youtube";
 import { classifySongs } from "../services/llm/index.js";
 import { playlistEngine } from "../playlist/playlistEngine.js";
 import STRATEGIES from "../strategy/index.js";
-import validatePlaylists from "../utils/validatePlaylist";
+import validatePlaylists from "../playlist/playlistValidator.js";
 import recommendPlaylists from "../playlist/playlistRecommender.js";
 import { initialPlaylist } from "../utils/data";
 
