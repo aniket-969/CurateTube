@@ -21,9 +21,6 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    console.log("[PLAYLIST SCREEN] mounted");
-    console.log("[PLAYLIST SCREEN] DEV_MODE:", DEV_MODE);
-
     if (DEV_MODE) {
       setLoading(false);
       return;
@@ -85,9 +82,14 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
         // Start LLM processing immediately.
         // The YouTube fetching loop continues while
         // this request is running.
+        // const job = classifySongs(
+        //   "deepseek",
+        //   import.meta.env.VITE_DEEPSEEK_API_KEY,
+        //   items
+        // );
         const job = classifySongs(
-          "deepseek",
-          import.meta.env.VITE_DEEPSEEK_API_KEY,
+          "openai",
+          import.meta.env.VITE_OPENAI_API_KEY,
           items
         );
 
@@ -105,7 +107,7 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
       // Wait for every LLM batch to finish.
       const results = await Promise.all(classificationJobs);
 
-      // console.log("All videos classified:", results);
+      console.log("All videos classified:", results);
 
       // Combine all classified batches.
       const classifiedVideos = results.flat();
@@ -141,9 +143,7 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
       // selected by default in the UI.
       const recommendedPlaylists = recommendPlaylists(validatedPlaylists);
 
-      console.log(
-        "RECOMMENDED:",recommendedPlaylists
-      );
+      console.log("RECOMMENDED:", recommendedPlaylists);
 
       onGenerated(recommendedPlaylists);
     } catch (error) {

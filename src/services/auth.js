@@ -42,7 +42,7 @@ export async function login() {
 
   const tokenInfo = await tokenInfoResponse.json();
 
-  console.log("TOKEN INFO:", tokenInfo,accessToken);
+  // console.log("TOKEN INFO:", tokenInfo,accessToken);
 
   if (!accessToken) {
     throw new Error("Access token not found.");

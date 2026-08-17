@@ -26,7 +26,7 @@ export async function getPlaylists(accessToken, pageToken = "") {
 
   const tokenInfo = await tokenInfoResponse.json();
 
-  console.log("TOKEN INFO:", tokenInfo, accessToken);
+  // console.log("TOKEN INFO:", tokenInfo, accessToken);
   const response = await fetch(`${API}/playlists?${params}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
