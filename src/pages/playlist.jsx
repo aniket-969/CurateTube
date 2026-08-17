@@ -8,7 +8,7 @@ import validatePlaylists from "../utils/validatePlaylist";
 import recommendPlaylists from "../playlist/playlistRecommender.js";
 import { initialPlaylist } from "../utils/data";
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 function PlaylistScreen({ user, setUser, onGenerated }) {
   const [playlists, setPlaylists] = useState(DEV_MODE ? initialPlaylist : []);
   const [nextPageToken, setNextPageToken] = useState(null);
@@ -145,7 +145,6 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
         "RECOMMENDED:",recommendedPlaylists
       );
 
-      // Hand the final result to App.
       onGenerated(recommendedPlaylists);
     } catch (error) {
       console.error("Playlist processing failed:", error);

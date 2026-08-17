@@ -6,7 +6,7 @@ import { validateStoredUser } from "./services/auth";
 import { syncGeneratedPlaylist } from "./services/ytPlaylistWriter";
 import { DEV_USER, initialPlaylist, recommendedPl } from "./utils/data";
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 function App() {
   const [user, setUser] = useState(DEV_MODE ? DEV_USER : undefined);
@@ -44,7 +44,7 @@ function App() {
 
     const results = [];
     console.log("Final created playlists", selectedPlaylists);
-    return;
+   
     for (const playlist of selectedPlaylists) {
       try {
         const result = await syncGeneratedPlaylist(user.accessToken, playlist);

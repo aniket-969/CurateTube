@@ -63,6 +63,7 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
   }, [playlists]);
 
   function handleGenerate() {
+    console.log("Attempting to create playlist")
     const selectedPlaylists = playlists
       .map((playlist, index) => ({
         ...playlist,
@@ -73,7 +74,7 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
     if (!selectedPlaylists.length) {
       return;
     }
-
+console.log("Passing to ongenerate")
     onGenerate?.(selectedPlaylists);
   }
 

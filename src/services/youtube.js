@@ -471,6 +471,7 @@ export async function updatePlaylistTitle(
   playlist,
   title
 ) {
+  console.log("updating playlist title")
   const requestBody = {
     id: playlist.id,
     snippet: {
@@ -492,7 +493,7 @@ export async function updatePlaylistTitle(
   );
 
   const data = await response.json();
-
+  console.log(data,"Updated yt playlist")
   if (!response.ok) {
     throw new Error(
       data?.error?.message ||
