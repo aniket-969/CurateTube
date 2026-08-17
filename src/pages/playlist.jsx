@@ -88,10 +88,15 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
         //   items
         // );
         const job = classifySongs(
-          "openai",
-          import.meta.env.VITE_OPENAI_API_KEY,
+          "gemini",
+          import.meta.env.VITE_GEMINI_API_KEY,
           items
         );
+        // const job = classifySongs(
+        //   "openai",
+        //   import.meta.env.VITE_OPENAI_API_KEY,
+        //   items
+        // );
 
         classificationJobs.push(job);
 
