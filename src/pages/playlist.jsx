@@ -77,12 +77,7 @@ function PlaylistScreen({
   function handlePlaylistClick(playlist) {
     if (processing) return;
 
-    /*
-     * Do not call the YouTube API yet.
-     *
-     * The user has selected the playlist, so pass it
-     * to App.jsx and let App.jsx move to the AI config screen.
-     */
+   
     onPlaylistSelected(playlist);
   }
 
