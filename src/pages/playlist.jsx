@@ -1,16 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { logout } from "../services/auth";
-import { getPlaylists, getPlaylistItems } from "../services/youtube";
-import { classifySongs } from "../services/llm/index.js";
-import { playlistEngine } from "../playlist/playlistEngine.js";
-import STRATEGIES from "../strategy/index.js";
-import validatePlaylists from "../playlist/playlistValidator.js";
-import recommendPlaylists from "../playlist/playlistRecommender.js";
+import { getPlaylists } from "../services/youtube";
 import { initialPlaylist } from "../utils/data";
 
 const DEV_MODE = false;
-function PlaylistScreen({ user, setUser, onGenerated }) {
-  const [playlists, setPlaylists] = useState(DEV_MODE ? initialPlaylist : []);
+
+function PlaylistScreen({
+  user,
+  setUser,
+  onPlaylistSelected,
+  selectedPlaylist,
+  aiConfig,
+  onGenerated,
+}) {
+  const [playlists, setPlaylists] = useState(
+    DEV_MODE ? initialPlaylist : []
+  );
+
   const [nextPageToken, setNextPageToken] = useState(null);
 
   const [search, setSearch] = useState("");
@@ -32,7 +38,9 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
   async function loadInitialPlaylists() {
     try {
       const data = await getPlaylists(user.accessToken);
+
       console.log("Initial data", data);
+
       setPlaylists(data.playlists);
       setNextPageToken(data.nextPageToken);
     } catch (error) {
@@ -48,9 +56,15 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
     setLoadingMore(true);
 
     try {
-      const data = await getPlaylists(user.accessToken, nextPageToken);
+      const data = await getPlaylists(
+        user.accessToken,
+        nextPageToken
+      );
 
-      setPlaylists((prev) => [...prev, ...data.playlists]);
+      setPlaylists((prev) => [
+        ...prev,
+        ...data.playlists,
+      ]);
 
       setNextPageToken(data.nextPageToken);
     } catch (error) {
@@ -60,102 +74,16 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
     }
   }
 
-  async function handlePlaylistClick(playlist) {
+  function handlePlaylistClick(playlist) {
     if (processing) return;
 
-    setProcessing(true);
-
-    try {
-      let pageToken = "";
-
-      const classificationJobs = [];
-
-      while (true) {
-        const { items, nextPageToken } = await getPlaylistItems(
-          user.accessToken,
-          playlist.id,
-          pageToken
-        );
-
-        console.log(`Fetched ${items.length} videos`);
-
-        // Start LLM processing immediately.
-        // The YouTube fetching loop continues while
-        // this request is running.
-        // const job = classifySongs(
-        //   "deepseek",
-        //   import.meta.env.VITE_DEEPSEEK_API_KEY,
-        //   items
-        // );
-        const job = classifySongs(
-          "gemini",
-          import.meta.env.VITE_GEMINI_API_KEY,
-          items
-        );
-        // const job = classifySongs(
-        //   "openai",
-        //   import.meta.env.VITE_OPENAI_API_KEY,
-        //   items
-        // );
-
-        classificationJobs.push(job);
-
-        if (!nextPageToken) {
-          break;
-        }
-
-        pageToken = nextPageToken;
-      }
-
-      console.log("Finished fetching playlist.");
-
-      // Wait for every LLM batch to finish.
-      const results = await Promise.all(classificationJobs);
-
-      console.log("All videos classified:", results);
-
-      // Combine all classified batches.
-      const classifiedVideos = results.flat();
-
-      console.log("Total classified videos:", classifiedVideos.length);
-
-      // Run playlist engine ONCE on the complete dataset.
-      const genrePlaylists = playlistEngine(classifiedVideos, STRATEGIES.genre);
-
-      const artistPlaylists = playlistEngine(
-        classifiedVideos,
-        STRATEGIES.artist
-      );
-      const eraPlaylists = playlistEngine(classifiedVideos, STRATEGIES.era);
-
-      const moodPlaylists = playlistEngine(classifiedVideos, STRATEGIES.mood);
-
-      const generatedPlaylists = [
-        ...genrePlaylists,
-        ...artistPlaylists,
-        ...eraPlaylists,
-        ...moodPlaylists,
-      ];
-
-      console.log("Generated playlists:", generatedPlaylists);
-
-      // Remove invalid candidates.
-      const validatedPlaylists = validatePlaylists(generatedPlaylists);
-
-      console.log("VALIDATED:", validatedPlaylists);
-
-      // Decide which valid playlists should be
-      // selected by default in the UI.
-      const recommendedPlaylists = recommendPlaylists(validatedPlaylists);
-
-      console.log("RECOMMENDED:", recommendedPlaylists);
-
-      onGenerated(recommendedPlaylists);
-    } catch (error) {
-      console.error("Playlist processing failed:", error);
-    } finally {
-      setProcessing(false);
-    }
+    /*
+     * Do not call the YouTube API yet.
+     *
+     * The user has selected the playlist, so pass it
+     * to App.jsx and let App.jsx move to the AI config screen.
+     */
+    onPlaylistSelected(playlist);
   }
 
   async function handleLogout() {
@@ -191,13 +119,13 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
           onClick={handleLogout}
           disabled={processing}
           className="
-          rounded-lg border border-zinc-700 bg-zinc-900
-          px-3 py-1.5 text-xs font-medium text-zinc-300
-          transition
-          hover:border-zinc-600 hover:bg-zinc-800 hover:text-white
-          active:scale-[0.98]
-          disabled:cursor-not-allowed disabled:opacity-50
-        "
+            rounded-lg border border-zinc-700 bg-zinc-900
+            px-3 py-1.5 text-xs font-medium text-zinc-300
+            transition
+            hover:border-zinc-600 hover:bg-zinc-800 hover:text-white
+            active:scale-[0.98]
+            disabled:cursor-not-allowed disabled:opacity-50
+          "
         >
           Logout
         </button>
@@ -225,18 +153,18 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
             onChange={(e) => setSearch(e.target.value)}
             disabled={processing}
             className="
-            h-11 w-full rounded-xl
-            border border-zinc-700
-            bg-zinc-900/60
-            pl-9 pr-3
-            text-sm text-white
-            placeholder:text-zinc-600
-            outline-none
-            transition
-            focus:border-zinc-500
-            focus:bg-zinc-900
-            disabled:cursor-not-allowed disabled:opacity-50
-          "
+              h-11 w-full rounded-xl
+              border border-zinc-700
+              bg-zinc-900/60
+              pl-9 pr-3
+              text-sm text-white
+              placeholder:text-zinc-600
+              outline-none
+              transition
+              focus:border-zinc-500
+              focus:bg-zinc-900
+              disabled:cursor-not-allowed disabled:opacity-50
+            "
           />
         </div>
 
@@ -251,10 +179,10 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
               onClick={handleLoadMore}
               disabled={loadingMore || processing}
               className="
-              text-[11px] font-medium text-zinc-400
-              transition hover:text-white
-              disabled:opacity-50
-            "
+                text-[11px] font-medium text-zinc-400
+                transition hover:text-white
+                disabled:opacity-50
+              "
             >
               {loadingMore ? "Loading..." : "Load more"}
             </button>
@@ -270,11 +198,11 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
       {/* Playlist list */}
       <div
         className="
-        min-h-0 flex-1
-        overflow-y-auto
-        px-4 pb-4
-        scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700
-      "
+          min-h-0 flex-1
+          overflow-y-auto
+          px-4 pb-4
+          scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700
+        "
       >
         {processing ? (
           <div className="flex h-full flex-col items-center justify-center px-8 text-center">
@@ -309,18 +237,18 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
                 key={playlist.id}
                 onClick={() => handlePlaylistClick(playlist)}
                 className="
-                group
-                w-full
-                rounded-xl
-                border border-zinc-800
-                bg-zinc-900/40
-                px-4 py-3.5
-                text-left
-                transition-all
-                hover:border-zinc-700
-                hover:bg-zinc-900
-                active:scale-[0.995]
-              "
+                  group
+                  w-full
+                  rounded-xl
+                  border border-zinc-800
+                  bg-zinc-900/40
+                  px-4 py-3.5
+                  text-left
+                  transition-all
+                  hover:border-zinc-700
+                  hover:bg-zinc-900
+                  active:scale-[0.995]
+                "
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -330,19 +258,21 @@ function PlaylistScreen({ user, setUser, onGenerated }) {
 
                     <p className="mt-1 text-xs text-zinc-500">
                       {playlist.itemCount}{" "}
-                      {playlist.itemCount === 1 ? "video" : "videos"}
+                      {playlist.itemCount === 1
+                        ? "video"
+                        : "videos"}
                     </p>
                   </div>
 
                   {/* Arrow */}
                   <svg
                     className="
-                    h-4 w-4 shrink-0
-                    text-zinc-700
-                    transition
-                    group-hover:translate-x-0.5
-                    group-hover:text-zinc-400
-                  "
+                      h-4 w-4 shrink-0
+                      text-zinc-700
+                      transition
+                      group-hover:translate-x-0.5
+                      group-hover:text-zinc-400
+                    "
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
