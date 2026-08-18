@@ -13,9 +13,10 @@ const DEV_MODE = false;
 function App() {
   const [user, setUser] = useState(DEV_MODE ? DEV_USER : undefined);
 
-  const [screen, setScreen] = useState(DEV_MODE ? "generated" : "playlists");
+  const [screen, setScreen] = useState(
+    DEV_MODE ? "generated" : "playlists"
+  );
 
-  // Playlist currently selected by the user for analysis.
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
   const [aiConfig, setAiConfig] = useState(null);
@@ -58,6 +59,7 @@ function App() {
 
   function handleBackToPlaylists() {
     setSelectedPlaylist(null);
+    setAiConfig(null);
     setScreen("playlists");
   }
 
@@ -94,8 +96,6 @@ function App() {
           (progress) => {
             setCreationProgress({
               ...progress,
-
-              // Overall playlist progress
               totalPlaylists: playlistsToCreate.length,
               completedPlaylists: i,
             });
@@ -104,7 +104,6 @@ function App() {
 
         results.push(result);
 
-        // Mark the playlist as completed.
         setCreationProgress((prev) => ({
           ...prev,
           type: "playlist-complete",
@@ -114,7 +113,10 @@ function App() {
           playlistName: playlist.name,
         }));
       } catch (error) {
-        console.error(`Failed to sync playlist "${playlist.name}":`, error);
+        console.error(
+          `Failed to sync playlist "${playlist.name}":`,
+          error
+        );
 
         results.push({
           name: playlist.name,
@@ -133,7 +135,10 @@ function App() {
       }
     }
 
-    console.log("YouTube playlist creation results:", results);
+    console.log(
+      "YouTube playlist creation results:",
+      results
+    );
 
     setCreationResults(results);
 
@@ -190,7 +195,9 @@ function App() {
   if (screen === "results") {
     return (
       <div className="flex h-[560px] w-[400px] flex-col items-center justify-center bg-[#0f0f0f] text-center text-white">
-        <p className="text-lg font-semibold">Playlists created</p>
+        <p className="text-lg font-semibold">
+          Playlists created
+        </p>
 
         <p className="mt-2 text-sm text-zinc-500">
           {creationResults.length} playlist

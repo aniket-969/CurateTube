@@ -1,6 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { logout } from "../services/auth";
-import { getPlaylists } from "../services/youtube";
+import { getPlaylists, getPlaylistItems } from "../services/youtube";
+import { classifySongs } from "../services/llm/index.js";
+import { playlistEngine } from "../playlist/playlistEngine.js";
+import STRATEGIES from "../strategy/index.js";
+import validatePlaylists from "../playlist/playlistValidator.js";
+import recommendPlaylists from "../playlist/playlistRecommender.js";
 import { initialPlaylist } from "../utils/data";
 
 const DEV_MODE = false;
@@ -26,6 +31,8 @@ function PlaylistScreen({
 
   const [processing, setProcessing] = useState(false);
 
+  const processingStarted = useRef(false);
+
   useEffect(() => {
     if (DEV_MODE) {
       setLoading(false);
@@ -34,6 +41,14 @@ function PlaylistScreen({
 
     loadInitialPlaylists();
   }, []);
+
+  useEffect(() => {
+    if (!selectedPlaylist || !aiConfig) return;
+    if (processingStarted.current) return;
+
+    processingStarted.current = true;
+    handlePlaylistProcessing(selectedPlaylist, aiConfig);
+  }, [selectedPlaylist, aiConfig]);
 
   async function loadInitialPlaylists() {
     try {
@@ -77,8 +92,111 @@ function PlaylistScreen({
   function handlePlaylistClick(playlist) {
     if (processing) return;
 
-   
     onPlaylistSelected(playlist);
+  }
+
+  async function handlePlaylistProcessing(playlist, config) {
+    setProcessing(true);
+
+    try {
+      let pageToken = "";
+      const classificationJobs = [];
+
+      while (true) {
+        const { items, nextPageToken } =
+          await getPlaylistItems(
+            user.accessToken,
+            playlist.id,
+            pageToken
+          );
+
+        const job = classifySongs(
+          config.provider,
+          config.apiKey,
+          items
+        );
+
+        classificationJobs.push(job);
+
+        if (!nextPageToken) {
+          break;
+        }
+
+        pageToken = nextPageToken;
+      }
+
+      console.log("Finished fetching playlist.");
+
+      const results = await Promise.all(
+        classificationJobs
+      );
+
+      console.log("All videos classified:", results);
+
+      const classifiedVideos = results.flat();
+
+      console.log(
+        "Total classified videos:",
+        classifiedVideos.length
+      );
+
+      const genrePlaylists = playlistEngine(
+        classifiedVideos,
+        STRATEGIES.genre
+      );
+
+      const artistPlaylists = playlistEngine(
+        classifiedVideos,
+        STRATEGIES.artist
+      );
+
+      const eraPlaylists = playlistEngine(
+        classifiedVideos,
+        STRATEGIES.era
+      );
+
+      const moodPlaylists = playlistEngine(
+        classifiedVideos,
+        STRATEGIES.mood
+      );
+
+      const generatedPlaylists = [
+        ...genrePlaylists,
+        ...artistPlaylists,
+        ...eraPlaylists,
+        ...moodPlaylists,
+      ];
+
+      console.log(
+        "Generated playlists:",
+        generatedPlaylists
+      );
+
+      const validatedPlaylists =
+        validatePlaylists(generatedPlaylists);
+
+      console.log(
+        "VALIDATED:",
+        validatedPlaylists
+      );
+
+      const recommendedPlaylists =
+        recommendPlaylists(validatedPlaylists);
+
+      console.log(
+        "RECOMMENDED:",
+        recommendedPlaylists
+      );
+
+      onGenerated(recommendedPlaylists);
+    } catch (error) {
+      console.error(
+        "Playlist processing failed:",
+        error
+      );
+    } finally {
+      setProcessing(false);
+    }
   }
 
   async function handleLogout() {

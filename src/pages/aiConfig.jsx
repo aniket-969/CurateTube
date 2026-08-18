@@ -76,14 +76,7 @@ function AIConfig({ playlist, onContinue, onBack }) {
   const [usingSharedGemini, setUsingSharedGemini] = useState(false);
 
   useEffect(() => {
-    const keys = getStoredKeys();
-
-    setSavedKeys(keys);
-
-    if (keys.deepseek) {
-      setApiKey(keys.deepseek);
-      setUsingSavedKey(true);
-    }
+    setSavedKeys(getStoredKeys());
   }, []);
 
   const selectedProvider = useMemo(
@@ -96,10 +89,9 @@ function AIConfig({ playlist, onContinue, onBack }) {
 
   function handleProviderChange(nextProvider) {
     setProvider(nextProvider);
-
+    setApiKey("");
     setUsingSavedKey(false);
     setUsingSharedGemini(false);
-    setApiKey("");
   }
 
   function handleUseSavedKey(savedProvider) {
@@ -109,41 +101,45 @@ function AIConfig({ playlist, onContinue, onBack }) {
 
     setProvider(savedProvider);
     setApiKey(key);
-
     setUsingSavedKey(true);
     setUsingSharedGemini(false);
   }
 
   function handleUseSharedGemini() {
     setProvider("gemini");
-    setApiKey(SHARED_GEMINI_API_KEY);
-
+    setApiKey("");
     setUsingSavedKey(false);
     setUsingSharedGemini(true);
   }
 
   function handleApiKeyChange(event) {
     setApiKey(event.target.value);
-
     setUsingSavedKey(false);
     setUsingSharedGemini(false);
   }
 
   function handleContinue() {
+    if (usingSharedGemini) {
+      onContinue({
+        provider: "gemini",
+        apiKey: SHARED_GEMINI_API_KEY,
+      });
+
+      return;
+    }
+
     const trimmedKey = apiKey.trim();
 
     if (!trimmedKey) {
       return;
     }
 
-    if (!usingSharedGemini) {
-      saveKey(provider, trimmedKey);
+    saveKey(provider, trimmedKey);
 
-      setSavedKeys((prev) => ({
-        ...prev,
-        [provider]: trimmedKey,
-      }));
-    }
+    setSavedKeys((prev) => ({
+      ...prev,
+      [provider]: trimmedKey,
+    }));
 
     onContinue({
       provider,
@@ -153,9 +149,11 @@ function AIConfig({ playlist, onContinue, onBack }) {
 
   const hasSavedKeys = Object.keys(savedKeys).length > 0;
 
+  const canContinue =
+    usingSharedGemini || Boolean(apiKey.trim());
+
   return (
     <div className="flex h-[560px] w-[400px] flex-col bg-[#0f0f0f] text-white">
-      {/* Header */}
       <header className="flex items-center gap-3 border-b border-zinc-800/80 px-4 py-3.5">
         <button
           onClick={onBack}
@@ -191,7 +189,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
         </div>
       </header>
 
-      {/* Content */}
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700">
         <div>
           <p className="text-sm font-semibold text-white">
@@ -204,7 +201,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
           </p>
         </div>
 
-        {/* Provider selection */}
         <div className="mt-4 space-y-2">
           {PROVIDERS.map((item) => {
             const selected = provider === item.id;
@@ -228,7 +224,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
                   }
                 `}
               >
-                {/* Radio */}
                 <span
                   className={`
                     flex h-4 w-4 shrink-0 items-center justify-center
@@ -275,7 +270,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
           })}
         </div>
 
-        {/* API key */}
         <div className="mt-5">
           <div className="flex items-center justify-between">
             <label
@@ -288,6 +282,12 @@ function AIConfig({ playlist, onContinue, onBack }) {
             {usingSavedKey && (
               <span className="text-[10px] text-emerald-400">
                 Saved key selected
+              </span>
+            )}
+
+            {usingSharedGemini && (
+              <span className="text-[10px] text-amber-400">
+                Shared key selected
               </span>
             )}
           </div>
@@ -313,7 +313,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
           />
         </div>
 
-        {/* Saved keys */}
         {hasSavedKeys && (
           <div className="mt-5">
             <p className="text-xs font-medium text-zinc-300">
@@ -372,7 +371,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
           </div>
         )}
 
-        {/* Shared Gemini */}
         <div className="mt-5 border-t border-zinc-800 pt-4">
           <p className="text-xs font-medium text-zinc-300">
             Don't have a Gemini API key?
@@ -425,12 +423,11 @@ function AIConfig({ playlist, onContinue, onBack }) {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="border-t border-zinc-800/80 px-4 py-3">
         <button
           type="button"
           onClick={handleContinue}
-          disabled={!apiKey.trim()}
+          disabled={!canContinue}
           className="
             w-full rounded-lg
             bg-white
