@@ -18,10 +18,8 @@ function PlaylistScreen({
   aiConfig,
   onGenerated,
 }) {
-  const [playlists, setPlaylists] = useState(
-    DEV_MODE ? initialPlaylist : []
-  );
-
+  const [playlists, setPlaylists] = useState(DEV_MODE ? initialPlaylist : []);
+  const [processingError, setProcessingError] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
 
   const [search, setSearch] = useState("");
@@ -71,15 +69,9 @@ function PlaylistScreen({
     setLoadingMore(true);
 
     try {
-      const data = await getPlaylists(
-        user.accessToken,
-        nextPageToken
-      );
+      const data = await getPlaylists(user.accessToken, nextPageToken);
 
-      setPlaylists((prev) => [
-        ...prev,
-        ...data.playlists,
-      ]);
+      setPlaylists((prev) => [...prev, ...data.playlists]);
 
       setNextPageToken(data.nextPageToken);
     } catch (error) {
@@ -103,18 +95,13 @@ function PlaylistScreen({
       const classificationJobs = [];
 
       while (true) {
-        const { items, nextPageToken } =
-          await getPlaylistItems(
-            user.accessToken,
-            playlist.id,
-            pageToken
-          );
-
-        const job = classifySongs(
-          config.provider,
-          config.apiKey,
-          items
+        const { items, nextPageToken } = await getPlaylistItems(
+          user.accessToken,
+          playlist.id,
+          pageToken
         );
+
+        const job = classifySongs(config.provider, config.apiKey, items);
 
         classificationJobs.push(job);
 
@@ -127,38 +114,24 @@ function PlaylistScreen({
 
       console.log("Finished fetching playlist.");
 
-      const results = await Promise.all(
-        classificationJobs
-      );
+      const results = await Promise.all(classificationJobs);
 
       console.log("All videos classified:", results);
 
       const classifiedVideos = results.flat();
 
-      console.log(
-        "Total classified videos:",
-        classifiedVideos.length
-      );
+      console.log("Total classified videos:", classifiedVideos.length);
 
-      const genrePlaylists = playlistEngine(
-        classifiedVideos,
-        STRATEGIES.genre
-      );
+      const genrePlaylists = playlistEngine(classifiedVideos, STRATEGIES.genre);
 
       const artistPlaylists = playlistEngine(
         classifiedVideos,
         STRATEGIES.artist
       );
 
-      const eraPlaylists = playlistEngine(
-        classifiedVideos,
-        STRATEGIES.era
-      );
+      const eraPlaylists = playlistEngine(classifiedVideos, STRATEGIES.era);
 
-      const moodPlaylists = playlistEngine(
-        classifiedVideos,
-        STRATEGIES.mood
-      );
+      const moodPlaylists = playlistEngine(classifiedVideos, STRATEGIES.mood);
 
       const generatedPlaylists = [
         ...genrePlaylists,
@@ -167,32 +140,23 @@ function PlaylistScreen({
         ...moodPlaylists,
       ];
 
-      console.log(
-        "Generated playlists:",
-        generatedPlaylists
-      );
+      console.log("Generated playlists:", generatedPlaylists);
 
-      const validatedPlaylists =
-        validatePlaylists(generatedPlaylists);
+      const validatedPlaylists = validatePlaylists(generatedPlaylists);
 
-      console.log(
-        "VALIDATED:",
-        validatedPlaylists
-      );
+      console.log("VALIDATED:", validatedPlaylists);
 
-      const recommendedPlaylists =
-        recommendPlaylists(validatedPlaylists);
+      const recommendedPlaylists = recommendPlaylists(validatedPlaylists);
 
-      console.log(
-        "RECOMMENDED:",
-        recommendedPlaylists
-      );
+      console.log("RECOMMENDED:", recommendedPlaylists);
 
       onGenerated(recommendedPlaylists);
     } catch (error) {
-      console.error(
-        "Playlist processing failed:",
-        error
+      console.error("Playlist processing failed:", error);
+
+      setProcessingError(
+        error?.message ||
+          "Failed to process playlist. Please check your API key."
       );
     } finally {
       setProcessing(false);
@@ -232,13 +196,13 @@ function PlaylistScreen({
           onClick={handleLogout}
           disabled={processing}
           className="
-            rounded-lg border border-zinc-700 bg-zinc-900
-            px-3 py-1.5 text-xs font-medium text-zinc-300
-            transition
-            hover:border-zinc-600 hover:bg-zinc-800 hover:text-white
-            active:scale-[0.98]
-            disabled:cursor-not-allowed disabled:opacity-50
-          "
+        rounded-lg border border-zinc-700 bg-zinc-900
+        px-3 py-1.5 text-xs font-medium text-zinc-300
+        transition
+        hover:border-zinc-600 hover:bg-zinc-800 hover:text-white
+        active:scale-[0.98]
+        disabled:cursor-not-allowed disabled:opacity-50
+      "
         >
           Logout
         </button>
@@ -266,18 +230,18 @@ function PlaylistScreen({
             onChange={(e) => setSearch(e.target.value)}
             disabled={processing}
             className="
-              h-11 w-full rounded-xl
-              border border-zinc-700
-              bg-zinc-900/60
-              pl-9 pr-3
-              text-sm text-white
-              placeholder:text-zinc-600
-              outline-none
-              transition
-              focus:border-zinc-500
-              focus:bg-zinc-900
-              disabled:cursor-not-allowed disabled:opacity-50
-            "
+          h-11 w-full rounded-xl
+          border border-zinc-700
+          bg-zinc-900/60
+          pl-9 pr-3
+          text-sm text-white
+          placeholder:text-zinc-600
+          outline-none
+          transition
+          focus:border-zinc-500
+          focus:bg-zinc-900
+          disabled:cursor-not-allowed disabled:opacity-50
+        "
           />
         </div>
 
@@ -292,10 +256,10 @@ function PlaylistScreen({
               onClick={handleLoadMore}
               disabled={loadingMore || processing}
               className="
-                text-[11px] font-medium text-zinc-400
-                transition hover:text-white
-                disabled:opacity-50
-              "
+            text-[11px] font-medium text-zinc-400
+            transition hover:text-white
+            disabled:opacity-50
+          "
             >
               {loadingMore ? "Loading..." : "Load more"}
             </button>
@@ -311,11 +275,11 @@ function PlaylistScreen({
       {/* Playlist list */}
       <div
         className="
-          min-h-0 flex-1
-          overflow-y-auto
-          px-4 pb-4
-          scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700
-        "
+      min-h-0 flex-1
+      overflow-y-auto
+      px-4 pb-4
+      scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700
+    "
       >
         {processing ? (
           <div className="flex h-full flex-col items-center justify-center px-8 text-center">
@@ -336,6 +300,44 @@ function PlaylistScreen({
               Keep this window open while processing completes.
             </p>
           </div>
+        ) : processingError ? (
+          <div className="flex h-full flex-col items-center justify-center px-8 text-center">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-400">
+              <svg
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v4" />
+                <path d="M12 16h.01" />
+              </svg>
+            </div>
+
+            <p className="text-sm font-medium text-white">Processing failed</p>
+
+            <p className="mt-1.5 max-w-[280px] text-xs leading-5 text-zinc-500">
+              {processingError}
+            </p>
+
+            <button
+              onClick={() => {
+                setProcessingError(null);
+                onAIConfigError();
+              }}
+              className="
+            mt-5 rounded-lg
+            bg-white px-4 py-2
+            text-xs font-semibold text-zinc-900
+            transition
+            hover:bg-zinc-200
+          "
+            >
+              Change AI settings
+            </button>
+          </div>
         ) : loading ? (
           <div className="flex h-full items-center justify-center">
             <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -350,18 +352,18 @@ function PlaylistScreen({
                 key={playlist.id}
                 onClick={() => handlePlaylistClick(playlist)}
                 className="
-                  group
-                  w-full
-                  rounded-xl
-                  border border-zinc-800
-                  bg-zinc-900/40
-                  px-4 py-3.5
-                  text-left
-                  transition-all
-                  hover:border-zinc-700
-                  hover:bg-zinc-900
-                  active:scale-[0.995]
-                "
+              group
+              w-full
+              rounded-xl
+              border border-zinc-800
+              bg-zinc-900/40
+              px-4 py-3.5
+              text-left
+              transition-all
+              hover:border-zinc-700
+              hover:bg-zinc-900
+              active:scale-[0.995]
+            "
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -371,21 +373,19 @@ function PlaylistScreen({
 
                     <p className="mt-1 text-xs text-zinc-500">
                       {playlist.itemCount}{" "}
-                      {playlist.itemCount === 1
-                        ? "video"
-                        : "videos"}
+                      {playlist.itemCount === 1 ? "video" : "videos"}
                     </p>
                   </div>
 
                   {/* Arrow */}
                   <svg
                     className="
-                      h-4 w-4 shrink-0
-                      text-zinc-700
-                      transition
-                      group-hover:translate-x-0.5
-                      group-hover:text-zinc-400
-                    "
+                  h-4 w-4 shrink-0
+                  text-zinc-700
+                  transition
+                  group-hover:translate-x-0.5
+                  group-hover:text-zinc-400
+                "
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
