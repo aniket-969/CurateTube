@@ -6,9 +6,6 @@ import { playlistEngine } from "../playlist/playlistEngine.js";
 import STRATEGIES from "../strategy/index.js";
 import validatePlaylists from "../playlist/playlistValidator.js";
 import recommendPlaylists from "../playlist/playlistRecommender.js";
-import { initialPlaylist } from "../utils/data";
-
-const DEV_MODE = false;
 
 function PlaylistScreen({
   user,
@@ -19,7 +16,7 @@ function PlaylistScreen({
   onGenerated,
   onAIConfigError,
 }) {
-  const [playlists, setPlaylists] = useState(DEV_MODE ? initialPlaylist : []);
+  const [playlists, setPlaylists] = useState([]);
   const [processingError, setProcessingError] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
 
@@ -33,11 +30,6 @@ function PlaylistScreen({
   const processingStarted = useRef(false);
 
   useEffect(() => {
-    if (DEV_MODE) {
-      setLoading(false);
-      return;
-    }
-
     loadInitialPlaylists();
   }, []);
 
@@ -53,14 +45,19 @@ function PlaylistScreen({
     try {
       const data = await getPlaylists(user.accessToken);
 
-      console.log("Initial data", data);
-
       setPlaylists(data.playlists);
       setNextPageToken(data.nextPageToken);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+
+      setProcessingError({
+        source: error?.source || "youtube",
+        status: error?.status,
+        reason: error?.reason,
+        message: error?.message || "Failed to load playlists.",
+      });
     }
   }
 
@@ -79,6 +76,12 @@ function PlaylistScreen({
       console.error(error);
     } finally {
       setLoadingMore(false);
+       setProcessingError({
+    source: error?.source || "youtube",
+    status: error?.status,
+    reason: error?.reason,
+    message: error?.message || "Failed to load more playlists.",
+  });
     }
   }
 
@@ -113,15 +116,9 @@ function PlaylistScreen({
         pageToken = nextPageToken;
       }
 
-      console.log("Finished fetching playlist.");
-
       const results = await Promise.all(classificationJobs);
 
-      console.log("All videos classified:", results);
-
       const classifiedVideos = results.flat();
-
-      console.log("Total classified videos:", classifiedVideos.length);
 
       const genrePlaylists = playlistEngine(classifiedVideos, STRATEGIES.genre);
 
@@ -141,15 +138,15 @@ function PlaylistScreen({
         ...moodPlaylists,
       ];
 
-      console.log("Generated playlists:", generatedPlaylists);
+      // console.log("Generated playlists:", generatedPlaylists);
 
       const validatedPlaylists = validatePlaylists(generatedPlaylists);
 
-      console.log("VALIDATED:", validatedPlaylists);
+      // console.log("VALIDATED:", validatedPlaylists);
 
       const recommendedPlaylists = recommendPlaylists(validatedPlaylists);
 
-      console.log("RECOMMENDED:", recommendedPlaylists);
+      // console.log("RECOMMENDED:", recommendedPlaylists);
 
       onGenerated(recommendedPlaylists);
     } catch (error) {

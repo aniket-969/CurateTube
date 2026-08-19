@@ -6,40 +6,28 @@ import GeneratedPlaylists from "./pages/generatedPlaylist";
 import CreatingPlaylists from "./pages/CreatingPlaylists";
 import { validateStoredUser } from "./services/auth";
 import { syncGeneratedPlaylist } from "./services/ytPlaylistWriter";
-import { DEV_USER, recommendedPl } from "./utils/data";
-
-const DEV_MODE = false;
 
 function App() {
-  const [user, setUser] = useState(DEV_MODE ? DEV_USER : undefined);
+  const [user, setUser] = useState(undefined);
 
-  const [screen, setScreen] = useState(DEV_MODE ? "generated" : "playlists");
+  const [screen, setScreen] = useState("playlists");
 
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
   const [aiConfig, setAiConfig] = useState(null);
 
-  const [generatedPlaylists, setGeneratedPlaylists] = useState(
-    DEV_MODE ? recommendedPl : []
-  );
+  const [generatedPlaylists, setGeneratedPlaylists] = useState([]);
 
   function handleAIConfigError() {
     setAiConfig(null);
     setScreen("aiConfig");
   }
-  // Playlists selected by the user on the generated screen.
+
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
-
-  // Live progress while playlists are being created.
   const [creationProgress, setCreationProgress] = useState(null);
-
-  // Final results from YouTube playlist creation.
   const [creationResults, setCreationResults] = useState([]);
 
   useEffect(() => {
-    if (DEV_MODE) {
-      return;
-    }
 
     async function init() {
       const storedUser = await validateStoredUser();
@@ -71,8 +59,7 @@ function App() {
   }
 
   async function handleGenerate(playlistsToCreate) {
-    console.log("Final selected playlists:", playlistsToCreate);
-
+   
     setSelectedPlaylists(playlistsToCreate);
 
     setCreationResults([]);
@@ -133,8 +120,6 @@ function App() {
         }));
       }
     }
-
-    console.log("YouTube playlist creation results:", results);
 
     setCreationResults(results);
 

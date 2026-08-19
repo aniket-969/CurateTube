@@ -12,14 +12,7 @@ function processLevels({
   levelIndex,
   values,
 }) {
-  // console.log("[PROCESS LEVELS]", {
-  //   dominant,
-  //   dominantValue,
-  //   levelIndex,
-  //   currentLevel: strategy.levels[levelIndex],
-  //   videoCount: videos.length,
-  // });
-  // Finished traversing all levels
+ 
   if (levelIndex >= strategy.levels.length) {
     return;
   }
@@ -102,12 +95,7 @@ export function playlistEngine(videos, config) {
           })
         );
       }
-      // console.log("[PLAYLIST ENGINE] Running strategy:", {
-      //   dominant: config.dominant,
-      //   dominantValue,
-      //   strategy,
-      //   bucketSize: bucket.length,
-      // });
+      
       processLevels({
         playlists,
         videos: bucket,

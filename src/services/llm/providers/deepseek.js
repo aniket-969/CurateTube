@@ -29,8 +29,6 @@ export async function classifySongs(apiKey, songs) {
       ],
     });
 
-    // console.log(response.usage);
-
     const text = response.choices?.[0]?.message?.content;
 
     if (!text) {

@@ -158,11 +158,6 @@ export async function getPlaylistsForWriter(accessToken, pageToken = "") {
     nextPageToken: data.nextPageToken ?? null,
   };
 
-  console.log("[YouTube] getPlaylistsForWriter SUCCESS:", {
-    playlistCount: result.playlists.length,
-    hasNextPage: Boolean(result.nextPageToken),
-  });
-
   return result;
 }
 
@@ -170,24 +165,16 @@ export async function getAllPlaylistsForWriter(accessToken) {
   const existingCache = getPlaylistCache();
 
   if (existingCache) {
-    console.log("[YTWL] Using cached YouTube playlists.");
-
     return existingCache;
   }
 
   const existingPromise = getPlaylistCachePromise();
 
   if (existingPromise) {
-    console.log(
-      "[YTWL] Playlist cache is currently being built. Waiting for existing request..."
-    );
-
     return existingPromise;
   }
 
   const promise = (async () => {
-    console.log("[YTWL] Building complete YouTube playlist cache...");
-
     const allById = new Map();
     const generatedByYtwlId = new Map();
 
@@ -195,15 +182,10 @@ export async function getAllPlaylistsForWriter(accessToken) {
     let page = 1;
 
     while (true) {
-      console.log(`[YTWL] Fetching all playlists page ${page}...`);
-
+    
       const response = await getPlaylistsForWriter(accessToken, pageToken);
 
       const playlists = response.playlists || [];
-
-      console.log(
-        `[YTWL] Playlist cache page ${page}: ${playlists.length} playlists`
-      );
 
       for (const playlist of playlists) {
         allById.set(playlist.id, playlist);
@@ -229,11 +211,6 @@ export async function getAllPlaylistsForWriter(accessToken) {
     };
 
     setPlaylistCache(cache);
-
-    console.log("[YTWL] Complete playlist cache built:", {
-      totalPlaylists: allById.size,
-      generatedPlaylists: generatedByYtwlId.size,
-    });
 
     return cache;
   })();
@@ -277,12 +254,6 @@ export async function getPlaylistItemsForWriter(
     nextPageToken: data.nextPageToken ?? null,
   };
 
-  console.log("[YouTube] getPlaylistItemsForWriter SUCCESS:", {
-    playlistId,
-    videoCount: result.items.length,
-    hasNextPage: Boolean(result.nextPageToken),
-  });
-
   return result;
 }
 
@@ -302,8 +273,6 @@ export async function createPlaylist(
     },
   };
 
-  console.log("creating playlist", title);
-
   const data = await youtubeFetch(`${API}/playlists?part=snippet,status`, {
     method: "POST",
     headers: {
@@ -312,8 +281,6 @@ export async function createPlaylist(
     },
     body: JSON.stringify(requestBody),
   });
-
-  console.log("Created playlist sucess", data.id);
 
   return data;
 }
@@ -331,8 +298,6 @@ export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
 
   const maxAttempts = 5;
 
-  console.log("Trying videoId", videoId, playlistId);
-
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const data = await youtubeFetch(`${API}/playlistItems?part=snippet`, {
@@ -342,13 +307,6 @@ export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
-      });
-
-      console.log("[YouTube] addVideoToPlaylist SUCCESS:", {
-        playlistId,
-        videoId,
-        playlistItemId: data.id,
-        attempt,
       });
 
       return data;
@@ -380,12 +338,6 @@ export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
 
       const delay = 1000 * 2 ** (attempt - 1);
 
-      console.log(
-        `[YouTube] Retrying ${videoId} in ${delay}ms ` +
-          `(reason: ${error.reason}, ` +
-          `attempt ${attempt + 1}/${maxAttempts})`
-      );
-
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
@@ -394,8 +346,7 @@ export async function addVideoToPlaylist(accessToken, playlistId, videoId) {
 }
 
 export async function updatePlaylistTitle(accessToken, playlist, title) {
-  console.log("updating playlist title");
-
+ 
   const requestBody = {
     id: playlist.id,
     snippet: {
@@ -412,8 +363,6 @@ export async function updatePlaylistTitle(accessToken, playlist, title) {
     },
     body: JSON.stringify(requestBody),
   });
-
-  console.log(data, "Updated yt playlist");
 
   return {
     id: data.id,

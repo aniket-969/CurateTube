@@ -12,8 +12,6 @@ const YTWL_PREFIX = "YTWL:v1:";
 function createYTWLId(playlist) {
   const ytwlId = `${YTWL_PREFIX}${createPlaylistKey(playlist.meta.values)}`;
 
-  console.log("[YTWL] Generated ytwlId:", ytwlId);
-
   return ytwlId;
 }
 
@@ -24,47 +22,31 @@ function createPlaylistDescription(ytwlId) {
 }
 
 async function findGeneratedPlaylist(accessToken, ytwlId) {
-  console.log("[YTWL] Looking up generated playlist:", ytwlId);
-
   const cache = await getAllPlaylistsForWriter(accessToken);
 
   const found = cache.generatedByYtwlId.get(ytwlId);
 
   if (found) {
-    console.log("[YTWL] Existing generated playlist found:", found);
-
     return found;
   }
-
-  console.log("[YTWL] Generated playlist not found:", ytwlId);
 
   return null;
 }
 
 async function getExistingVideoIds(accessToken, playlistId) {
-  console.log("[YTWL] Fetching existing videos from playlist:", playlistId);
-
   const videoIds = new Set();
 
   let pageToken = "";
   let page = 1;
 
   while (true) {
-    console.log(
-      `[YTWL] Fetching playlist items page ${page} for playlist ${playlistId}...`
-    );
-
     const response = await getPlaylistItemsForWriter(
       accessToken,
       playlistId,
       pageToken
     );
 
-    console.log(`[YTWL] Playlist items page ${page} response:`, response);
-
     const items = response.items || [];
-
-    console.log(`[YTWL] Found ${items.length} video IDs on page ${page}`);
 
     for (const videoId of items) {
       videoIds.add(videoId);
@@ -78,8 +60,6 @@ async function getExistingVideoIds(accessToken, playlistId) {
     page++;
   }
 
-  console.log(`[YTWL] Total existing videos in playlist: ${videoIds.size}`);
-
   return videoIds;
 }
 
@@ -87,16 +67,8 @@ async function waitForNewPlaylist(accessToken, playlistId) {
   const maxAttempts = 5;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    console.log(
-      `[YTWL] Checking playlist propagation: attempt ${attempt}/${maxAttempts}`
-    );
-
     try {
       const response = await getPlaylistItemsForWriter(accessToken, playlistId);
-
-      console.log(
-        "[YTWL] Playlist is now available through playlistItems.list."
-      );
 
       return new Set(response.items || []);
     } catch (error) {
@@ -110,11 +82,6 @@ async function waitForNewPlaylist(accessToken, playlistId) {
 
       const delay = 1000 * 2 ** (attempt - 1);
 
-      console.log(
-        `[YTWL] Playlist not propagated yet. ` +
-          `Waiting ${delay}ms before retry...`
-      );
-
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
@@ -127,8 +94,6 @@ export async function syncGeneratedPlaylist(
   generatedPlaylist,
   onProgress
 ) {
-  console.log("[YTWL] generatedPlaylist:", generatedPlaylist);
-
   if (!accessToken) {
     console.error("[YTWL] ERROR: accessToken is missing!");
     throw new Error("YouTube access token is missing");
@@ -140,8 +105,6 @@ export async function syncGeneratedPlaylist(
   }
 
   const ytwlId = createYTWLId(generatedPlaylist);
-
-  console.log("[YTWL] Looking for existing generated playlist...", ytwlId);
 
   // Tell UI we're starting this playlist.
   onProgress?.({
@@ -158,8 +121,6 @@ export async function syncGeneratedPlaylist(
 
   // No existing playlist → create it.
   if (!youtubePlaylist) {
-    console.log("[YTWL] Creating new YouTube playlist...");
-
     onProgress?.({
       type: "playlist-creating",
       playlistName: generatedPlaylist.name,
@@ -175,11 +136,6 @@ export async function syncGeneratedPlaylist(
       "private"
     );
 
-    console.log(
-      "[YTWL] YouTube playlist created successfully:",
-      youtubePlaylist
-    );
-
     created = true;
   } else {
     if (youtubePlaylist.title !== generatedPlaylist.name) {
@@ -189,11 +145,6 @@ export async function syncGeneratedPlaylist(
         generatedPlaylist.name
       );
     }
-
-    console.log(
-      "[YTWL] Using existing YouTube playlist:",
-      youtubePlaylist
-    );
   }
 
   const playlistId = youtubePlaylist.id;
@@ -209,27 +160,12 @@ export async function syncGeneratedPlaylist(
 
   // Get existing videos.
   if (created) {
-    existingVideoIds = await waitForNewPlaylist(
-      accessToken,
-      playlistId
-    );
-
-    console.log("[YTWL] New playlist is propagated.");
+    existingVideoIds = await waitForNewPlaylist(accessToken, playlistId);
   } else {
-    console.log("[YTWL] Fetching existing video IDs...");
-
-    existingVideoIds = await getExistingVideoIds(
-      accessToken,
-      playlistId
-    );
+    existingVideoIds = await getExistingVideoIds(accessToken, playlistId);
   }
 
   const desiredVideoIds = new Set(generatedPlaylist.videoIds || []);
-
-  console.log(
-    "[YTWL] Desired video IDs:",
-    Array.from(desiredVideoIds)
-  );
 
   const alreadyPresent = [];
   const videosToInsert = [];
@@ -259,20 +195,8 @@ export async function syncGeneratedPlaylist(
   for (let i = 0; i < videosToInsert.length; i++) {
     const videoId = videosToInsert[i];
 
-    console.log(
-      `[YTWL] Attempting to add video: ${videoId}`
-    );
-
     try {
-      await addVideoToPlaylist(
-        accessToken,
-        playlistId,
-        videoId
-      );
-
-      console.log(
-        `[YTWL] Successfully added video: ${videoId}`
-      );
+      await addVideoToPlaylist(accessToken, playlistId, videoId);
 
       added.push(videoId);
 
@@ -287,16 +211,22 @@ export async function syncGeneratedPlaylist(
         failedVideos: failed.length,
       });
     } catch (error) {
-      console.error(
-        `[YTWL] FAILED to add video: ${videoId}`,
-        error
-      );
+      console.error(`[YTWL] FAILED to add video: ${videoId}`, error);
 
       failed.push({
         videoId,
         error: error?.message || String(error),
       });
 
+      onProgress?.({
+        type: "video-error",
+        playlistName: generatedPlaylist.name,
+        videoId,
+        error: error?.message || String(error),
+        source: error?.source || "youtube",
+        status: error?.status,
+        reason: error?.reason,
+      });
       // Still report progress because this video has been processed.
       onProgress?.({
         type: "video-progress",
@@ -332,8 +262,6 @@ export async function syncGeneratedPlaylist(
     added,
     failed,
   };
-
-  console.log("[YTWL] Result:", result);
 
   onProgress?.({
     type: "playlist-complete",
