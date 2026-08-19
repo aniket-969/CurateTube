@@ -104,27 +104,42 @@ src/
 
 ```mermaid
 flowchart TD
-    A[Login] --> B[Playlist Selection]
-    B --> C[LLM Service]
-    C -->|LLM Output| D[Playlist Engine]
+    A[User Login] --> B[Fetch User Playlists]
+    B --> C[Playlist Selection]
+    C --> D[LLM Service]
 
-    subgraph PE[Playlist Engine]
-        D1[Strategies]
-        D2[Validation]
-        D3[Recommender]
+    D -->|Classified Song Attributes| E
 
-        D1 --> D2
-        D2 --> D3
+    subgraph E[Playlist Engine]
+        S[Strategy Layer]
 
-        D1 --> S1[Genre]
-        D1 --> S2[Artist]
-        D1 --> S3[Era]
-        D1 --> S4[Mood]
+        S1[Genre Strategy]
+        S2[Artist Strategy]
+        S3[Era Strategy]
+        S4[Mood Strategy]
+        S5[Language Strategy]
+
+        V[Validator]
+        R[Recommender]
+
+        S --> S1
+        S --> S2
+        S --> S3
+        S --> S4
+        S --> S5
+
+        S1 --> V
+        S2 --> V
+        S3 --> V
+        S4 --> V
+        S5 --> V
+
+        V --> R
     end
 
-    D --> D1
-    D3 --> E[Playlist Writer]
-    E --> F[YouTube Music]
+    R -->|Playlist Candidates| F[User Selection & Editing]
+    F --> G[Playlist Writer]
+    G --> H[YT Music Playlist]
 ```
 
 ### How It Works
