@@ -13,9 +13,7 @@ const DEV_MODE = false;
 function App() {
   const [user, setUser] = useState(DEV_MODE ? DEV_USER : undefined);
 
-  const [screen, setScreen] = useState(
-    DEV_MODE ? "generated" : "playlists"
-  );
+  const [screen, setScreen] = useState(DEV_MODE ? "generated" : "playlists");
 
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
@@ -25,6 +23,10 @@ function App() {
     DEV_MODE ? recommendedPl : []
   );
 
+  function handleAIConfigError() {
+    setAiConfig(null);
+    setScreen("aiConfig");
+  }
   // Playlists selected by the user on the generated screen.
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
 
@@ -113,10 +115,7 @@ function App() {
           playlistName: playlist.name,
         }));
       } catch (error) {
-        console.error(
-          `Failed to sync playlist "${playlist.name}":`,
-          error
-        );
+        console.error(`Failed to sync playlist "${playlist.name}":`, error);
 
         results.push({
           name: playlist.name,
@@ -135,10 +134,7 @@ function App() {
       }
     }
 
-    console.log(
-      "YouTube playlist creation results:",
-      results
-    );
+    console.log("YouTube playlist creation results:", results);
 
     setCreationResults(results);
 
@@ -195,9 +191,7 @@ function App() {
   if (screen === "results") {
     return (
       <div className="flex h-[560px] w-[400px] flex-col items-center justify-center bg-[#0f0f0f] text-center text-white">
-        <p className="text-lg font-semibold">
-          Playlists created
-        </p>
+        <p className="text-lg font-semibold">Playlists created</p>
 
         <p className="mt-2 text-sm text-zinc-500">
           {creationResults.length} playlist
@@ -222,6 +216,7 @@ function App() {
       selectedPlaylist={selectedPlaylist}
       aiConfig={aiConfig}
       onGenerated={handleGeneratedPlaylists}
+      onAIConfigError={handleAIConfigError}
     />
   );
 }

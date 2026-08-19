@@ -10,7 +10,6 @@ export async function classifySongs(apiKey, songs) {
       dangerouslyAllowBrowser: true,
     });
 
-
     const response = await client.chat.completions.create({
       model: "deepseek-v4-flash",
       temperature: 0,
@@ -40,6 +39,7 @@ export async function classifySongs(apiKey, songs) {
 
     return parseLLMResponse(text);
   } catch (err) {
+    err.source = "llm";
     console.error("DeepSeek Error:", err);
     throw err;
   }

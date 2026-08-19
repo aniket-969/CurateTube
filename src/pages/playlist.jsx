@@ -17,6 +17,7 @@ function PlaylistScreen({
   selectedPlaylist,
   aiConfig,
   onGenerated,
+  onAIConfigError,
 }) {
   const [playlists, setPlaylists] = useState(DEV_MODE ? initialPlaylist : []);
   const [processingError, setProcessingError] = useState(null);
@@ -89,7 +90,7 @@ function PlaylistScreen({
 
   async function handlePlaylistProcessing(playlist, config) {
     setProcessing(true);
-
+    setProcessingError(null);
     try {
       let pageToken = "";
       const classificationJobs = [];
@@ -154,10 +155,10 @@ function PlaylistScreen({
     } catch (error) {
       console.error("Playlist processing failed:", error);
 
-      setProcessingError(
-        error?.message ||
-          "Failed to process playlist. Please check your API key."
-      );
+      setProcessingError({
+        source: error?.source || "unknown",
+        message: error?.message || "Failed to process playlist.",
+      });
     } finally {
       setProcessing(false);
     }
@@ -319,24 +320,43 @@ function PlaylistScreen({
             <p className="text-sm font-medium text-white">Processing failed</p>
 
             <p className="mt-1.5 max-w-[280px] text-xs leading-5 text-zinc-500">
-              {processingError}
+              {processingError.message}
             </p>
 
-            <button
-              onClick={() => {
-                setProcessingError(null);
-                onAIConfigError();
-              }}
-              className="
-            mt-5 rounded-lg
-            bg-white px-4 py-2
-            text-xs font-semibold text-zinc-900
-            transition
-            hover:bg-zinc-200
-          "
-            >
-              Change AI settings
-            </button>
+            {processingError.source === "llm" ? (
+              <button
+                onClick={() => {
+                  setProcessingError(null);
+                  processingStarted.current = false;
+                  onAIConfigError();
+                }}
+                className="
+          mt-5 rounded-lg
+          bg-white px-4 py-2
+          text-xs font-semibold text-zinc-900
+          transition
+          hover:bg-zinc-200
+        "
+              >
+                Change AI settings
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setProcessingError(null);
+                  processingStarted.current = false;
+                }}
+                className="
+          mt-5 rounded-lg
+          bg-white px-4 py-2
+          text-xs font-semibold text-zinc-900
+          transition
+          hover:bg-zinc-200
+        "
+              >
+                Back to playlists
+              </button>
+            )}
           </div>
         ) : loading ? (
           <div className="flex h-full items-center justify-center">
