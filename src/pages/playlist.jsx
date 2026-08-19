@@ -49,8 +49,6 @@ function PlaylistScreen({
       setNextPageToken(data.nextPageToken);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
 
       setProcessingError({
         source: error?.source || "youtube",
@@ -58,6 +56,8 @@ function PlaylistScreen({
         reason: error?.reason,
         message: error?.message || "Failed to load playlists.",
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -74,14 +74,14 @@ function PlaylistScreen({
       setNextPageToken(data.nextPageToken);
     } catch (error) {
       console.error(error);
+      setProcessingError({
+        source: error?.source || "youtube",
+        status: error?.status,
+        reason: error?.reason,
+        message: error?.message || "Failed to load more playlists.",
+      });
     } finally {
       setLoadingMore(false);
-       setProcessingError({
-    source: error?.source || "youtube",
-    status: error?.status,
-    reason: error?.reason,
-    message: error?.message || "Failed to load more playlists.",
-  });
     }
   }
 
