@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 
-const SHARED_GEMINI_API_KEY =
-  "AQ.Ab8RN6LEqmDxwUUbHTGfhPoncw54STB3xBdMFzoYK2FstqywrQ";
-
 const STORAGE_KEY = "curatetube_ai_keys";
 
 const PROVIDERS = [
@@ -73,17 +70,13 @@ function AIConfig({ playlist, onContinue, onBack }) {
   const [savedKeys, setSavedKeys] = useState({});
 
   const [usingSavedKey, setUsingSavedKey] = useState(false);
-  const [usingSharedGemini, setUsingSharedGemini] = useState(false);
 
   useEffect(() => {
     setSavedKeys(getStoredKeys());
   }, []);
 
   const selectedProvider = useMemo(
-    () =>
-      PROVIDERS.find(
-        (item) => item.id === provider
-      ),
+    () => PROVIDERS.find((item) => item.id === provider),
     [provider]
   );
 
@@ -91,7 +84,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
     setProvider(nextProvider);
     setApiKey("");
     setUsingSavedKey(false);
-    setUsingSharedGemini(false);
   }
 
   function handleUseSavedKey(savedProvider) {
@@ -102,32 +94,14 @@ function AIConfig({ playlist, onContinue, onBack }) {
     setProvider(savedProvider);
     setApiKey(key);
     setUsingSavedKey(true);
-    setUsingSharedGemini(false);
-  }
-
-  function handleUseSharedGemini() {
-    setProvider("gemini");
-    setApiKey("");
-    setUsingSavedKey(false);
-    setUsingSharedGemini(true);
   }
 
   function handleApiKeyChange(event) {
     setApiKey(event.target.value);
     setUsingSavedKey(false);
-    setUsingSharedGemini(false);
   }
 
   function handleContinue() {
-    if (usingSharedGemini) {
-      onContinue({
-        provider: "gemini",
-        apiKey: SHARED_GEMINI_API_KEY,
-      });
-
-      return;
-    }
-
     const trimmedKey = apiKey.trim();
 
     if (!trimmedKey) {
@@ -149,8 +123,7 @@ function AIConfig({ playlist, onContinue, onBack }) {
 
   const hasSavedKeys = Object.keys(savedKeys).length > 0;
 
-  const canContinue =
-    usingSharedGemini || Boolean(apiKey.trim());
+  const canContinue = Boolean(apiKey.trim());
 
   return (
     <div className="flex h-[560px] w-[400px] flex-col bg-[#0f0f0f] text-white">
@@ -179,9 +152,7 @@ function AIConfig({ playlist, onContinue, onBack }) {
         </button>
 
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white">
-            Analyze playlist
-          </p>
+          <p className="text-sm font-semibold text-white">Analyze playlist</p>
 
           <p className="mt-0.5 truncate text-xs text-zinc-500">
             {playlist?.title || "Selected playlist"}
@@ -196,8 +167,8 @@ function AIConfig({ playlist, onContinue, onBack }) {
           </p>
 
           <p className="mt-1 text-xs leading-5 text-zinc-500">
-            CurateTube will use your selected provider to
-            analyze the songs in this playlist.
+            CurateTube will use your selected provider to analyze the songs in
+            this playlist.
           </p>
         </div>
 
@@ -209,9 +180,7 @@ function AIConfig({ playlist, onContinue, onBack }) {
               <button
                 key={item.id}
                 type="button"
-                onClick={() =>
-                  handleProviderChange(item.id)
-                }
+                onClick={() => handleProviderChange(item.id)}
                 className={`
                   flex w-full items-center gap-3 rounded-xl
                   border px-3.5 py-3
@@ -228,11 +197,7 @@ function AIConfig({ playlist, onContinue, onBack }) {
                   className={`
                     flex h-4 w-4 shrink-0 items-center justify-center
                     rounded-full border
-                    ${
-                      selected
-                        ? "border-white"
-                        : "border-zinc-600"
-                    }
+                    ${selected ? "border-white" : "border-zinc-600"}
                   `}
                 >
                   {selected && (
@@ -284,12 +249,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
                 Saved key selected
               </span>
             )}
-
-            {usingSharedGemini && (
-              <span className="text-[10px] text-amber-400">
-                Shared key selected
-              </span>
-            )}
           </div>
 
           <input
@@ -315,9 +274,7 @@ function AIConfig({ playlist, onContinue, onBack }) {
 
         {hasSavedKeys && (
           <div className="mt-5">
-            <p className="text-xs font-medium text-zinc-300">
-              Saved API keys
-            </p>
+            <p className="text-xs font-medium text-zinc-300">Saved API keys</p>
 
             <div className="mt-2 space-y-2">
               {PROVIDERS.map((item) => {
@@ -348,9 +305,7 @@ function AIConfig({ playlist, onContinue, onBack }) {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        handleUseSavedKey(item.id)
-                      }
+                      onClick={() => handleUseSavedKey(item.id)}
                       className="
                         shrink-0
                         rounded-md
@@ -370,57 +325,6 @@ function AIConfig({ playlist, onContinue, onBack }) {
             </div>
           </div>
         )}
-
-        <div className="mt-5 border-t border-zinc-800 pt-4">
-          <p className="text-xs font-medium text-zinc-300">
-            Don't have a Gemini API key?
-          </p>
-
-          <button
-            type="button"
-            onClick={handleUseSharedGemini}
-            className={`
-              mt-2 w-full rounded-lg border px-3 py-2.5
-              text-left transition
-              ${
-                usingSharedGemini
-                  ? "border-amber-500/40 bg-amber-500/5"
-                  : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900"
-              }
-            `}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-medium text-zinc-200">
-                  Use CurateTube's free Gemini key
-                </p>
-
-                <p className="mt-1 text-[10px] leading-4 text-zinc-600">
-                  No Gemini API key setup required.
-                </p>
-              </div>
-
-              {usingSharedGemini && (
-                <span className="shrink-0 text-[10px] font-medium text-amber-400">
-                  Selected
-                </span>
-              )}
-            </div>
-          </button>
-
-          <div className="mt-2 flex gap-2 rounded-lg bg-amber-500/5 px-3 py-2.5">
-            <span className="mt-px shrink-0 text-[11px] text-amber-400">
-              ⚠
-            </span>
-
-            <p className="text-[10px] leading-4 text-zinc-500">
-              Shared access may be rate-limited because the
-              key is shared between CurateTube users. For a
-              more reliable experience, use your own Gemini
-              API key.
-            </p>
-          </div>
-        </div>
       </div>
 
       <div className="border-t border-zinc-800/80 px-4 py-3">
