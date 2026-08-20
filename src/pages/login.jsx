@@ -27,8 +27,13 @@ function LoginScreen({ setUser }) {
       <main className="flex flex-1 flex-col items-center px-8 pt-20">
         <div className="flex w-full max-w-[300px] flex-col items-center">
           {/* Logo */}
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[22px] bg-red-600 shadow-lg shadow-red-600/20">
-            <span className="text-3xl font-bold">C</span>
+          {/* Logo */}
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[22px] overflow-hidden shadow-lg">
+            <img
+              src="/icons/icon128.png"
+              alt="Logo"
+              className="h-full w-full object-cover"
+            />
           </div>
 
           {/* Brand */}
@@ -38,8 +43,8 @@ function LoginScreen({ setUser }) {
             </h1>
 
             <p className="max-w-[300px] text-center text-[15px] leading-6 text-zinc-400">
-              Turn one YouTube playlist into separate playlists by genre,
-              mood, era, language, and artist with AI
+              Turn one YouTube playlist into separate playlists by genre, mood,
+              era, language, and artist with AI
             </p>
           </div>
 
