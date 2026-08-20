@@ -26,25 +26,13 @@ cd curatetube
 npm install
 ```
 
-### 2. Configure your AI provider
-
-Create a `.env` file in the project root:
-
-```env
-VITE_DEEPSEEK_API_KEY=
-VITE_GEMINI_API_KEY=
-VITE_OPENAI_API_KEY=
-```
-
-At least one API key is required. You only need to configure the provider you want to use.
-
-### 3. Build the extension
+### 2. Build the extension
 
 ```bash
 npm run build
 ```
 
-### 4. Load the extension
+### 3. Load the extension
 
 1. Open your browser's extension management page.
 2. Enable **Developer mode**.
