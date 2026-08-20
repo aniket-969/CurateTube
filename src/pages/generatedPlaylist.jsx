@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check, Pencil } from "lucide-react";
+import { Check, Pencil, ArrowLeft } from "lucide-react";
 
-function GeneratedPlaylists({ playlists = [], onGenerate }) {
+function GeneratedPlaylists({ playlists = [], onGenerate, onBack }) {
   const [selected, setSelected] = useState({});
   const [names, setNames] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
@@ -63,7 +63,6 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
   }, [playlists]);
 
   function handleGenerate() {
-  
     const selectedPlaylists = playlists
       .map((playlist, index) => ({
         ...playlist,
@@ -79,8 +78,42 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
 
   if (!playlists.length) {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-zinc-500">
-        No playlists were generated.
+      <div className="flex h-full flex-col items-center justify-center px-8 text-center">
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-zinc-600">
+          <svg
+            className="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+          >
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+          </svg>
+        </div>
+
+        <p className="text-sm font-medium text-zinc-300">
+          No playlists were generated
+        </p>
+
+        <p className="mt-1 max-w-[260px] text-xs leading-5 text-zinc-600">
+          We couldn't find enough songs that matched the selected criteria.
+        </p>
+
+        <button
+          onClick={onBack}
+          className="
+      mt-5 rounded-lg
+      bg-white px-4 py-2
+      text-xs font-semibold text-zinc-900
+      transition
+      hover:bg-zinc-200
+      active:scale-[0.98]
+    "
+        >
+          Back to playlists
+        </button>
       </div>
     );
   }
@@ -88,14 +121,33 @@ function GeneratedPlaylists({ playlists = [], onGenerate }) {
   return (
     <div className="flex h-full flex-col bg-[#0f0f0f] text-white">
       {/* Header */}
-      <header className="border-b border-zinc-800/80 px-4 py-4">
-        <h1 className="text-base font-semibold text-white">
-          Generated Playlists
-        </h1>
+      <header className="flex items-center gap-3 border-b border-zinc-800/80 px-4 py-4">
+        <button
+          type="button"
+          onClick={onBack}
+          className="
+    flex h-8 w-8 shrink-0 items-center justify-center
+    rounded-lg
+    bg-zinc-800
+    text-zinc-300
+    transition
+    hover:bg-zinc-700
+    hover:text-white
+  "
+          title="Back to playlists"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </button>
 
-        <p className="mt-1 text-xs leading-5 text-zinc-500">
-          Select the playlists you want to create.
-        </p>
+        <div>
+          <h1 className="text-base font-semibold text-white">
+            Generated Playlists
+          </h1>
+
+          <p className="mt-1 text-xs leading-5 text-zinc-500">
+            Select the playlists you want to create.
+          </p>
+        </div>
       </header>
 
       {/* Playlist list */}
